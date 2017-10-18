@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>doug's permission compare app</title>
+    <link href="./node_modules/materialize-css/dist/css/materialize.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="./css/animation1.css" rel="stylesheet">
+    <!--custom css controls the LED lights-->
+    <link href="./css/custom.css" rel="stylesheet">
+    
+    
+    <style>
+      @font-face {
+    font-family: "My Western Font";
+    src: url(./fonts/RioGrande.ttf) format("truetype");
+}
+      @font-face {
+    font-family: "My Western Font (Striped)";
+    src: url(./fonts/RioGrande.ttf) format("truetype");
+}
+.westernFont { 
+    font-family: "My Western Font", Verdana, Tahoma;
+}
+.stripedWesternFont{
+  font-family: "My Western Font (Striped)", Verdana, Tahoma;
+}
+      .overflowClip{
+        text-overflow:ellipsis;
+      }
+    li{
+      margin-top:15px;
+      height:64px;
+      padding:16px;
+      
+    }
+    input{
+      text-align: center;
+    }
+    #emptyRow{
+      height:25px;
+    }
+      #myWatermark{
+    position:absolute;
+    z-index:0;
+    background:white;
+    display:block;
+    min-height:50%; 
+    min-width:50%;
+    color:yellow;
+}
+
+#myWatermarkContent{
+    position:absolute;
+    z-index:1;
+}
+
+#myWatermarkText{
+    color:lightgrey;
+    font-size:120px;
+    transform:rotate(300deg);
+    -webkit-transform:rotate(300deg);
+}
+
+    </style>
+  </head>
+  <body>
+    <div class="row" id="emptyRow"></div>
+
+    <div>
+      <div class="row white blue-text text-darken-1" id="userinputarea">
+        <div class="row"></div>
+        <div class="row">
+          <div class="col s1 m1 l1"></div>
+          <input type="text" class="col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="do not include the @ umich">
+          <div class="col s1 m1 l1"></div>
+          <div id="btnCompare" class="col s2 m2 l2 btn-large blue lighten-2 z-depth-4 mainForm">Compare</div>
+          <div class="col s1 m1 l1"></div>
+          <input class="col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions TO this uniqname" type="text" id="user2Input" placeholder="when you enter 2 uniqnames"></div>
+          <div class="row"></div>
+        </div>
+    <div class="row blue white-text darken-2" id="useroutputarea">
+      <div class="col s5 m5 l5 blue white-text center" id="user1"></div>
+      <div class="col s2 m2 l2 blue darken-2">&nbsp;</div>
+      <div class="col s5 m5 l5 blue white-text center" id="user2"></div>
+    </div>
+    </div>
+<div class="right col s5 m5 l5" id="keyGoesHere"></div>
+</div>
+  </body>
+  <script>
+    require('./renderer.js')
+  </script>
+</html>
+ 
