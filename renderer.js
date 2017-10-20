@@ -38,6 +38,10 @@ $(document).ready(() => {
         $('.mainForm').addClass("disabled")
        
         //validateMyInput($('#user1Input').val(), $('#user2Input').val())
+        setTimeout(function(){$('#userinputarea').slideToggle("slow")},500)
+        $('#emptyrow').html(`<div class="row center"><div class="btn">test</div></div>`)
+
+
         const myHTML = new listOfGroups($('#user1Input').val(), $('#user2Input').val())
     })
 })

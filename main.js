@@ -1,6 +1,9 @@
 const electron = require('electron')
-// Module to control application life.
-const app = electron.app
+
+//const app = electron.app
+//destructured into...
+const {app, Menu, dialog} = electron
+
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
 
@@ -11,9 +14,49 @@ const url = require('url')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
+function createMenu() {
+  const template = [
+    {
+        label: 'View',
+        submenu: [
+          {
+            role: 'reload'
+          },
+          {
+            role: 'forcereload'
+          },
+          {
+            role: 'toggledevtools'
+          }
+
+        ]
+    },
+    {
+      label: 'Tools',
+      submenu: [
+        {
+          label: 'Current User',
+            click () {
+                let user = GERTWHOAMI
+                dialog.showMessageBox({
+                    type: "info",
+                    title: "Current User",
+                    message: `You are running as: ${user}.`
+                })
+            }
+        }
+      ]
+    }
+  ]
+
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
+}
+
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 1040, height: 768})
+  createMenu()
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({

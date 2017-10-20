@@ -61,6 +61,9 @@
     transform:rotate(300deg);
     -webkit-transform:rotate(300deg);
 }
+.hidden{
+       display:none;
+    }
 
     </style>
   </head>
@@ -72,21 +75,19 @@
         <div class="row"></div>
         <div class="row">
           <div class="col s1 m1 l1"></div>
-          <input type="text" class="col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="do not include the @ umich">
+          <input type="text" class="col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="Compare this user">
           <div class="col s1 m1 l1"></div>
           <div id="btnCompare" class="col s2 m2 l2 btn-large blue lighten-2 z-depth-4 mainForm">Compare</div>
           <div class="col s1 m1 l1"></div>
-          <input class="col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions TO this uniqname" type="text" id="user2Input" placeholder="when you enter 2 uniqnames"></div>
+          <input class="col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions TO this uniqname" type="text" id="user2Input" placeholder="to this user"></div>
           <div class="row"></div>
         </div>
     <div class="row blue white-text darken-2" id="useroutputarea">
-      <div class="col s5 m5 l5 blue white-text center" id="user1"></div>
-      <div class="col s2 m2 l2 blue darken-2">&nbsp;</div>
-      <div class="col s5 m5 l5 blue white-text center" id="user2"></div>
+      <div class="col s12 m6 l6 blue white-text center" id="user1"></div>
+      
+      <div class="col s12 m6 l6 blue white-text center" id="user2"></div>
     </div>
     </div>
-<div class="right col s5 m5 l5" id="keyGoesHere"></div>
-</div>
   </body>
   <script>
     require('./renderer.js')

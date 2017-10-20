@@ -1,5 +1,6 @@
 const { Set } = require('immutable')
 const powershell = require('node-powershell')
+
 module.exports.listOfGroups = class listOfGroups{
         constructor(u1, u2){
             let ps = new powershell({
@@ -17,55 +18,44 @@ module.exports.listOfGroups = class listOfGroups{
             const matchingGroups = (user1.intersect(user2))
             const user1UniqGroups = user1.subtract(matchingGroups)
             const user2UniqGroups = user2.subtract(matchingGroups)
-            var adGroupNames=[]
+            let adGroupNames=[]
             let letUser1Output = `<h2>${user1and2JSONfromPS.user1Name}</h2>
-            <ul class="blue darken-2">
-                <span class="white-text">`
+            <table>
+                <tbody>`
             let i=0
+            console.log(user1UniqGroups.count())
             user1UniqGroups.forEach((value)=>{
-            
-                const myElementID = `${i}`
-                
                 letUser1Output +=`
-                <li class="ADli row z-depth-3 white blue-text">
-                    <div class="col valign-wrapper">
-                        <div class="${i==0?`led-yellow`:`led-blue`} left" id="LED-${myElementID}"></div>
-                    </div>
-                    <div class="col blue-text text-darken-4 overflowClip">${value}</div>
-                </li>`  
+                <tr>
+                    <td class="white blue-text">
+                        <div class="col valign-wrapper">
+                            <div class="${i==0?`led-yellow`:`led-blue`} left" id="LED-${i}"></div>
+                        </div>
+                        <div class="row blue-text text-darken-3">${value} &nbsp;<span class="hidden chip right green white-text lighten-1 z-depth-2" id="copyGroupBtn${i}"><i class="close material-icons large">add</i>Add ${user1and2JSONfromPS.user1Name}</span></div>
+                    </td>
+                </tr>`  
                 adGroupNames.push(value)
                 i++
             })
+            letUser1Output += '</tbody></table><ul>'
 
-            letUser1Output += '</span>'
-
-            let letUser2Output = `<h2>${user1and2JSONfromPS.user2Name}</h2><ul class="blue darken-1"><span class="red amber-text ">`
+            let letUser2Output = `<h2>${user1and2JSONfromPS.user2Name}</h2><ul class="blue darken-1"><span class="amber-text text-lighten-1">`
             user2UniqGroups.forEach(function (value){
-                letUser2Output += `<li class="z-depth-3">${value}</li>`
+                letUser2Output += `<li class="z-depth-3 tooltipped" data-position="bottom" data-delay="50" data-tooltip="This is a group ${user1and2JSONfromPS.user1Name} is not in.">${value}</li>`
             })
             letUser2Output += '</span>'
 
-            letUser1Output += '<span>'
-            letUser2Output += '<span>'
-
             matchingGroups.forEach(function (value){
-                letUser1Output += `<li class="blue z-depth-3>${value}</li>`
+                letUser1Output +=  `<li class="blue z-depth-3 tooltipped" data-position="bottom" data-delay="50" data-tooltip="This is a group both users are already in.">${value}</li>`
+                letUser2Output += `<li class="blue z-depth-3 tooltipped" data-position="bottom" data-delay="50" data-tooltip="This is a group both users are already in.">${value}</li>`
             })
-
-            matchingGroups.forEach(function (value){
-                letUser2Output += `<li class="blue z-depth-3>${value}</li>`
-            })
-
-            letUser1Output += '</span>'
-            letUser2Output += '</span>'
 
             letUser1Output +='</ul>'
             letUser2Output +='</ul>'
 
-
             $('#user1').append(letUser1Output) //DOM Render
             $('#user2').append(letUser2Output) //DOM Render
-
+            $('.tooltipped').tooltip()
         
         function canIModifyThis(listOfIDs){ 
             
@@ -94,6 +84,11 @@ module.exports.listOfGroups = class listOfGroups{
                     //make LED green
                     $(elementID).addClass("led-green")
                     $(elementID).removeClass("led-yellow")
+                    const copyGroupBtnElement = `#copyGroupBtn${i}`
+                    $(copyGroupBtnElement).slideToggle("slow")
+                    //assign the click handler
+                    
+
                         }
                         if (i<max-1){i++;rapidFirePromise(i)}
                     }) //end of recursive then()
