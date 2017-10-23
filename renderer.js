@@ -30,6 +30,12 @@ window.$ = window.jQuery = require('./node_modules/jquery/dist/jquery.js') // I 
 window.Hammer = require('./node_modules/materialize-css/js/hammer.min.js') // For the purpoises of this trick the sequence of these 3 requires is important
 require('materialize-css')
 const { listOfGroups } = require('./my_modules/ADGroupCompare.js')
+
+//everything below here is horrific
+
+
+
+
 $(document).ready(() => {
     $('#btnCompare').click(() => {
         $('.tooltipped').tooltip({delay: 50})//initialize tooltips
@@ -38,10 +44,13 @@ $(document).ready(() => {
         $('.mainForm').addClass("disabled")
        
         //validateMyInput($('#user1Input').val(), $('#user2Input').val())
-        setTimeout(function(){$('#userinputarea').slideToggle("slow")},500)
+        setTimeout(function(){$(newFunction()).slideToggle("slow")},500)
         $('#emptyrow').html(`<div class="row center"><div class="btn">test</div></div>`)
 
 
         const myHTML = new listOfGroups($('#user1Input').val(), $('#user2Input').val())
     })
 })
+function newFunction() {
+    return '#userinputarea';
+}

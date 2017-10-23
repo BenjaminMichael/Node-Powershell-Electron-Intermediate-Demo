@@ -23,7 +23,6 @@ module.exports.listOfGroups = class listOfGroups{
             <table>
                 <tbody>`
             let i=0
-            console.log(user1UniqGroups.count())
             user1UniqGroups.forEach((value)=>{
                 letUser1Output +=`
                 <tr>
@@ -31,7 +30,7 @@ module.exports.listOfGroups = class listOfGroups{
                         <div class="col valign-wrapper">
                             <div class="${i==0?`led-yellow`:`led-blue`} left" id="LED-${i}"></div>
                         </div>
-                        <div class="row blue-text text-darken-3">${value} &nbsp;<span class="hidden chip right green white-text lighten-1 z-depth-2" id="copyGroupBtn${i}"><i class="close material-icons large">add</i>Add ${user1and2JSONfromPS.user1Name}</span></div>
+                        <div class="row blue-text text-darken-3">${value} &nbsp;<div class="hidden chip right green white-text lighten-1 z-depth-2" id="copyGroupBtn${i}"><i class="close material-icons large">add</i>Add ${user1and2JSONfromPS.user1Name}</div></div>
                     </td>
                 </tr>`  
                 adGroupNames.push(value)
@@ -56,9 +55,7 @@ module.exports.listOfGroups = class listOfGroups{
             $('#user1').append(letUser1Output) //DOM Render
             $('#user2').append(letUser2Output) //DOM Render
             $('.tooltipped').tooltip()
-        
-        function canIModifyThis(listOfIDs){ 
-            
+
             const max=adGroupNames.length
             
             function rapidFirePromise(i){
@@ -103,8 +100,6 @@ module.exports.listOfGroups = class listOfGroups{
         
         rapidFirePromise(0)
 
-            } //end of canIModifyThis()
-            canIModifyThis() //singleton recursive function
         }) //end of the main then()
     } //end of constructor   
 } //end of class export
