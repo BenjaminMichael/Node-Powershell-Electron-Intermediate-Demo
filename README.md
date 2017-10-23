@@ -1,4 +1,5 @@
-This is my own learning tutorial based on Xainey's PowerShell-Electron-Demo
+# My learning tutorial
+## based on [Xainey's PowerShell-Electron-Demo](https://github.com/Xainey/powershell-electron-demo)
 
 I wanted to take the example a bit further and explore a client side application that my coworker requested
 
