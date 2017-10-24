@@ -39,18 +39,12 @@ const { listOfGroups } = require('./my_modules/ADGroupCompare.js')
 $(document).ready(() => {
     $('#btnCompare').click(() => {
         $('.tooltipped').tooltip({delay: 50})//initialize tooltips
-
-        //validate this
         $('.mainForm').addClass("disabled")
-       
         //validateMyInput($('#user1Input').val(), $('#user2Input').val())
-        setTimeout(function(){$(newFunction()).slideToggle("slow")},500)
+        setTimeout(function(){$('#userinputarea').slideToggle("slow")},500)
         $('#emptyrow').html(`<div class="row center"><div class="btn">test</div></div>`)
 
 
         const myHTML = new listOfGroups($('#user1Input').val(), $('#user2Input').val())
     })
 })
-function newFunction() {
-    return '#userinputarea';
-}

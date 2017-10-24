@@ -52,9 +52,9 @@ module.exports.listOfGroups = class listOfGroups{
             letUser1Output +='</ul>'
             letUser2Output +='</ul>'
 
-            $('#user1').append(letUser1Output) //DOM Render
-            $('#user2').append(letUser2Output) //DOM Render
-            $('.tooltipped').tooltip()
+            $('#user1').append(letUser1Output) //DOM
+            $('#user2').append(letUser2Output) //DOM
+            $('.tooltipped').tooltip() //Materialize component dynamic init
 
             const max=adGroupNames.length
             
@@ -84,15 +84,16 @@ module.exports.listOfGroups = class listOfGroups{
                     const copyGroupBtnElement = `#copyGroupBtn${i}`
                     $(copyGroupBtnElement).slideToggle("slow")
                     //assign the click handler
-                    
-
-                        }
+                    $(copyGroupBtnElement).click(function(){
+                            alert("call my function")
+                        })
+                    }
                         if (i<max-1){i++;rapidFirePromise(i)}
                     }) //end of recursive then()
             .catch(err => { 
                 console.error(err)
-                //make LED red
-                $(elementID).html(`<a class="btn-large red white-text">ERROR</a>`)
+                //make LED red with a tooltip of the error text
+                $(elementID).html(`<a class="btn-large red white-text  tooltipped" data-position="bottom" data-delay="50" data-tooltip="${err}">ERROR</a>`)
 
                 ps.dispose()
                     })        
