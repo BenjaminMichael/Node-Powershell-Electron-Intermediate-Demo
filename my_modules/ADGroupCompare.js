@@ -63,14 +63,14 @@ module.exports.listOfGroups = class listOfGroups{
                 $(elementID).addClass("led-yellow")
                 $(elementID).removeClass("led-blue")
 
-                let ps = new powershell({
+                let psChain = new powershell({
                 executionPolicy: 'Bypass',
                 noProfile: true
                 })
                 
-                ps.addCommand("./get-effective-access.ps1", [{adgroupname : adGroupNames[i]}])
+                psChain.addCommand("./get-effective-access.ps1", [{adgroupname : adGroupNames[i]}])
 
-                ps.invoke()
+                psChain.invoke()
                 .then(output => {
                     
                     if(!output.includes("FullControl")){
@@ -81,11 +81,22 @@ module.exports.listOfGroups = class listOfGroups{
                     //make LED green
                     $(elementID).addClass("led-green")
                     $(elementID).removeClass("led-yellow")
+                    //make a chip-button to add user2 to the group
                     const copyGroupBtnElement = `#copyGroupBtn${i}`
                     $(copyGroupBtnElement).slideToggle("slow")
-                    //assign the click handler
+                    $(copyGroupBtnElement).attr("data-target", adGroupNames[i])
                     $(copyGroupBtnElement).click(function(){
-                            alert("call my function")
+                        let psAsync = new powershell({
+                            executionPolicy: 'Bypass',
+                            noProfile: true
+                            })
+                            
+                            psAsync.addCommand("./add-adGroupMember.ps1", [{user : user1and2JSONfromPS.user2Name , group : $(this).attr("data-target")}])
+            
+                            psAsync.invoke()
+                            .then(output => {
+                                if(output==="Success!"){$(this).addClass("green")}else{$(this).addClass("amber")}
+                            })
                         })
                     }
                         if (i<max-1){i++;rapidFirePromise(i)}
