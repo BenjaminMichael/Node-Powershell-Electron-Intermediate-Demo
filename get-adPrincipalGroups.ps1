@@ -6,10 +6,10 @@ param (
 )
 
 $payload = @{}
-$payload.user1sADGroupNames=@()
-$payload.user2sADGroupNames=@()
+$payload.user1sGroups=@()
+$payload.user2sGroups=@()
 $payload.user1Name = $user1
 $payload.user2Name = $user2
-Get-ADPrincipalGroupMembership $user1 | select name | ForEach-Object{$payload.user1sADGroupNames+=$_.name}
-Get-ADPrincipalGroupMembership $user2 | select name | ForEach-Object{$payload.user2sADGroupNames+=$_.name}
+Get-ADPrincipalGroupMembership -Identity $user1 | select distinguishedName | ForEach-Object{$payload.user1sGroups+=$_.distinguishedName}
+Get-ADPrincipalGroupMembership -Identity $user2 | select distinguishedName | ForEach-Object{$payload.user2sGroups+=$_.distinguishedName}
 $payload  | ConvertTo-Json | Out-Host
