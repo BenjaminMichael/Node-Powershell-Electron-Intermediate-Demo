@@ -5,34 +5,30 @@
     <title>doug's permission compare app</title>
     <link href="./node_modules/materialize-css/dist/css/materialize.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="./css/animation1.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     <!--custom css controls the LED lights-->
     <link href="./css/custom.css" rel="stylesheet">
     
     
     <style>
       @font-face {
-    font-family: "My Western Font";
-    src: url(./fonts/RioGrande.ttf) format("truetype");
-}
-      @font-face {
-    font-family: "My Western Font (Striped)";
-    src: url(./fonts/RioGrande.ttf) format("truetype");
-}
-.westernFont { 
-    font-family: "My Western Font", Verdana, Tahoma;
-}
-.stripedWesternFont{
-  font-family: "My Western Font (Striped)", Verdana, Tahoma;
-}
-      .overflowClip{
+        font-family: 'Roboto';
+        src: url("./node_modules/materialize-css/dist/fonts/roboto/Roboto-Bold.woff");
+      }
+      .roboto{
+        font-family:'Roboto'
+      }
+      .overflow {
         text-overflow:ellipsis;
       }
+      h4{
+        font-family: 'Lato', sans-serif;
+      }
     li{
-      margin-top:15px;
+      margin-top:8px;
       height:64px;
+      line-height:48px;
       padding:16px;
-      
     }
     input{
       text-align: center;
@@ -64,30 +60,43 @@
 .hidden{
        display:none;
     }
-
+#useroutputarea{
+  height:85vh;
+  display:none;
+}
+#userinputarea{
+  height:85vh;
+}
     </style>
   </head>
-  <body>
+  <body class="blue">
     <div class="row" id="emptyRow"></div>
+    <span class="row justify-content-center top-buffer">
+        <div class="alert alert-danger red white-text" role="alert" style="display: block">
+            <strong>
+              <div id="redMessageBar"></div>
+            </strong>
+        </div>
+      </span>
 
-    <div>
+    
       <div class="row white blue-text text-darken-1" id="userinputarea">
         <div class="row"></div>
         <div class="row">
           <div class="col s1 m1 l1"></div>
           <input type="text" class="col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="Compare this user">
           <div class="col s1 m1 l1"></div>
-          <div id="btnCompare" class="col s2 m2 l2 btn-large blue lighten-2 z-depth-4 mainForm">Compare</div>
+          <div id="btnCompare" class="col s2 m2 l2 btn-large roboto blue lighten-2 z-depth-4 mainForm">Compare</div>
           <div class="col s1 m1 l1"></div>
           <input class="col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions TO this uniqname" type="text" id="user2Input" placeholder="to this user"></div>
           <div class="row"></div>
         </div>
-    <div class="row blue white-text darken-2" id="useroutputarea">
+    <div class="fadeInEffect row blue white-text" id="useroutputarea">
       <div class="col s12 m6 l6 blue white-text center" id="user1"></div>
       
       <div class="col s12 m6 l6 blue white-text center" id="user2"></div>
     </div>
-    </div>
+    
   </body>
   <script>
     require('./renderer.js')
