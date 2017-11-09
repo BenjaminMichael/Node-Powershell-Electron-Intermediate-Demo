@@ -4,10 +4,13 @@
 //
 //todo:
 //validate input
+//the initial animation is good but it doesnt take long enough we need more animations and/or a progress bar
 //install PSDependencies
 //function to add them to the group needs finishing and an animation
 //custom error handler for ADGroupCompare.js both in the first promise and the rapidfirepromise
-//add a safe way to exit the program?
+//adgroupcompare.js line 84 we need to give them an opportunity to switch the users
+//intelligent hints about groups that end in -RDP and maybe other config o matic groups?  this would make another type of circle btn-large with the info icon that has a tooltip asbout how to add
+
 
 
 window.$ = window.jQuery = require('./node_modules/jquery/dist/jquery.js') // I use this when the NPM 'node_modules' folder is in my project and NOT installed globally.
