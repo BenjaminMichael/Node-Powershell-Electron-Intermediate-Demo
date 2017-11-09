@@ -11,6 +11,20 @@ const powershell = require('node-powershell')
 require('./ADGroupCompare.js')
 
 validateMyList = function (u1,u2){
+
+    function resetMyForm(){
+        $('.mainForm').removeClass("disabled")
+        $('#userinputarea').slideToggle("slow")
+        $('#emptyRow').empty()
+    }
+
+    if (!(u1 !=="" && u2!=="")){
+        setTimeout(function(){
+            resetMyForm()
+        },1000)  //if you dont wait for 1000 its too fast for some reason.  thanks DOM!
+        return
+    }
+
     
     //do an animation
     let ps = new powershell({
@@ -24,10 +38,10 @@ validateMyList = function (u1,u2){
     .then(output=>{
         
         const data=JSON.parse(output)
-        console.log(data[0].DN+"..."+data[1].DN)
-    if (data.Error) {
-            $('.alert-danger .message').html(data.Error.Message)
-            $('.alert-danger').show()
+        
+        if(data[2].Error.Message !== "No error"){
+           resetMyForm()
+            $('#redMessageBar').html(data[2].Error.Message)
             return
         }else{
                 listOfGroups(data[0].DN,data[1].DN,u1,u2)

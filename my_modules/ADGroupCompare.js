@@ -1,6 +1,8 @@
 const { Set } = require('immutable')
 const powershell = require('node-powershell')
 
+
+
 listOfGroups = function(u1DN, u2DN, u1Name, u2Name){
         
             let ps = new powershell({

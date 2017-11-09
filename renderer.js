@@ -9,7 +9,7 @@
 //function to add them to the group needs finishing and an animation
 //custom error handler for ADGroupCompare.js both in the first promise and the rapidfirepromise
 //adgroupcompare.js line 84 we need to give them an opportunity to switch the users
-//intelligent hints about groups that end in -RDP and maybe other config o matic groups?  this would make another type of circle btn-large with the info icon that has a tooltip asbout how to add
+//intelligent hints about groups that end in -RDP and maybe other domain specific groups?  this would make another type of circle btn-large with the info icon that has a tooltip asbout how to add
 
 
 
@@ -23,14 +23,14 @@ $(document).ready(() => {
 
     $('#btnCompare').click(() => {
         $('.mainForm').addClass("disabled")
-        setTimeout(function(){$('#userinputarea').slideToggle("slow")
-        $('#emptyRow').html(`<div class="row center">
-            <div class="progress">
-                <div class="indeterminate"></div>
-            </div>  
-        </div>`)},500)
-        validateMyList($('#user1Input').val(), $('#user2Input').val())
-        
+        //needs a button to cancel
+            setTimeout(function(){
+                $('#userinputarea').slideToggle("slow")
+                $('#emptyRow').html(`<div class="row center">
+                    <div class="progress">
+                        <div class="indeterminate"></div>
+                    </div>  
+            </div>`)},500)
+            validateMyList($('#user1Input').val(), $('#user2Input').val())
         })
-        
     })

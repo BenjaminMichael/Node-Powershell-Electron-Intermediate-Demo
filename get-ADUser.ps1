@@ -14,6 +14,8 @@ param (
         $out+=  Get-ADUser $u2 | Select-Object  @{Name='Name';     Expr='User2'},
                                                 @{Name='UserName'; Expr={$_.name}},
                                                 @{Name='DN';       Expr={$_.distinguishedName}}
+        $noError = @{ Message = "No error"}
+        $out+= @{ Error = $noError}
 
     }
     catch [System.Management.Automation.RuntimeException] {
@@ -21,7 +23,10 @@ param (
             Message = $_.Exception.Message
             Type = $_.FullyQualifiedErrorID
         }
-        $out = @{ Error = $myError }
+        $out=@()
+        $out += $null
+        $out += $null
+        $out += @{ Error = $myError }
     }
     
         ConvertTo-Json $out -Compress | Out-Host
