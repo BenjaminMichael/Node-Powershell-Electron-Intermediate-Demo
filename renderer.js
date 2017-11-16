@@ -19,11 +19,14 @@ require('materialize-css')
 require('./my_modules/validate-userNames.js')
 
 $(document).ready(() => {
+    $(".tabs>li>a").css("text-color", '#FFFFFF'); //a funky fix for sass
+
     $('.tooltipped').tooltip({delay: 50})//initialize tooltips
 
     $('#btnCompare').click(() => {
         $('.mainForm').addClass("disabled")
         //needs a button to cancel
+        $('#redMessageBar').empty();
             setTimeout(function(){
                 $('#userinputarea').slideToggle("slow")
                 $('#emptyRow').html(`<div class="row center">

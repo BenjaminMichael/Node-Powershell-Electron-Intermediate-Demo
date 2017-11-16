@@ -57,7 +57,7 @@ function createMenu() {
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 1040, height: 768})
+  mainWindow = new BrowserWindow({width: 1024, height: 768})
   createMenu()
 
   // and load the index.html of the app.

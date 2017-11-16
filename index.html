@@ -8,9 +8,19 @@
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     <!--custom css controls the LED lights-->
     <link href="./css/custom.css" rel="stylesheet">
+    <link href="./css/wildwildwest.css" rel="stylesheet">
+
     
     
     <style>
+      @font-face {
+        font-family:'RioGrande' ;
+        src: url('./fonts/RioGrande.ttf');
+      }
+      @font-face {
+        font-family:'RioGrande Striped' ;
+        src: url('./fonts/RioGrande Striped.ttf');
+      }
       @font-face {
         font-family: 'Roboto';
         src: url("./node_modules/materialize-css/dist/fonts/roboto/Roboto-Bold.woff");
@@ -21,8 +31,17 @@
       .overflow {
         text-overflow:ellipsis;
       }
+      h1{
+        font-family: 'RioGrande Striped';
+        font-size:2em;
+        
+      }
       h4{
         font-family: 'Lato', sans-serif;
+      }
+      .customPadding{
+        margin-left:12%;
+        margin-right:12%;
       }
     li{
       margin-top:8px;
@@ -36,27 +55,6 @@
     #emptyRow{
       height:25px;
     }
-      #myWatermark{
-    position:absolute;
-    z-index:0;
-    background:white;
-    display:block;
-    min-height:50%; 
-    min-width:50%;
-    color:yellow;
-}
-
-#myWatermarkContent{
-    position:absolute;
-    z-index:1;
-}
-
-#myWatermarkText{
-    color:lightgrey;
-    font-size:120px;
-    transform:rotate(300deg);
-    -webkit-transform:rotate(300deg);
-}
 .hidden{
        display:none;
     }
@@ -67,39 +65,87 @@
 #userinputarea{
   height:85vh;
 }
+.wildwestfont{
+  font-family: 'RioGrande';
+}
+.thinMargin{
+  margin-top:10px;
+}
     </style>
   </head>
-  <body class="blue">
+  <body>
+
+    <div id="clouds">
+
+    <!-- Empty Row -->
     <div class="row" id="emptyRow"></div>
+
+    <!-- Error messages row -->
     <span class="row justify-content-center top-buffer">
-        <div class="alert alert-danger red white-text" role="alert" style="display: block">
-            <strong>
-              <div id="redMessageBar"></div>
-            </strong>
-        </div>
-      </span>
+      <div class="alert alert-danger red white-text" role="alert" style="display: block">
+        <strong>
+          <div id="redMessageBar"></div>
+        </strong>
+      </div>
+    </span>
+
+    <!-- Nav Row -->
+      <div class="row customPadding" id="topNav">
+        <ul class="tabs row brown darken-3 roundCorners">
+          <li class="tab col s5">
+            <span class="coaster">
+              <span class="coaster__stitch"></span>
+              <span class="coaster__brand wildwestfont brown-text text-darken-4" id="yourNameHere">your name here</span>
+            </span> 
+          </li>
+          <li class="tab col s2"><a class="active" href="#welcomeTab"><div class="row translucent">Welcome</div></a></li>
+          <li class="tab col s2"><a  href="#test1">Compare</a></li>
+          <li class="tab col s2"><a href="#historyTab">History</a></li>
+        </ul>
+      </div>
+
+      <!-- Just clouds -->
+      <div class="cloud x1"></div>
+      <div class="cloud x2"></div>
+
+    <!--Welcome Tab -->
+    <div id="welcomeTab" class="row dark-primary-color translucent">
+      <div class="customPadding row">
+        <div class="col s12 m12 l12 wood-color center z-depth-3 brown-text text-darken-4 thinMargin"><h1>AD Group Wrangler</h1></div>
+        <div class="col s12 m12 l12 blue-text text-lighten-4">A simple tool for comparing AD Group Memberships.</div>
+      </div>
+      <div class="col s6 m6 l6">
+        <img src="https://static.vecteezy.com/system/resources/previews/000/117/956/original/vector-cowboy-and-wild-west-pack.jpg" class="responsive-img">
+      </div> 
+    </div>
+
+    <!--Compare Tab -->
+      <div id="test1" class="row orange accent-1 verticalPadding">
+        <div class="rowblue-text text-darken-1" id="userinputarea">
+              <div class="row">
+                <div class="col s2 m2 l2"></div>
+                <input type="text" class="light-blue-text col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="Compare this user">
+                <div class="col s1 m1 l1"></div>
+                <div id="btnCompare" class="col accent-color center z-depth-4 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Compare"><i class="material-icons white-text">group</i></div>
+                <div class="col s1 m1 l1"></div>
+                <input class="light-blue-text col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions TO this uniqname" type="text" id="user2Input" placeholder="to this user"></div>
+              </div>
+            <div class="topMargin row wood-color center z-depth-2  primary-text-color">text goes here</div>
+          <div class="row blue white-text darken-2" id="useroutputarea">
+            <div class="col s12 m6 l6 orange accent-1 white-text center" id="user1"></div>        
+            <div class="col s12 m6 l6 orange accent-1 white-text center" id="user2"></div>
+          </div>
+      </div>
+
+      <!--History Tab -->
+      <div id="historyTab" class="row text-primary-color dark-primary-color">Prior history not found</div>
+
+      </div> <!-- End of Clouds -->
 
     
-      <div class="row white blue-text text-darken-1" id="userinputarea">
-        <div class="row"></div>
-        <div class="row">
-          <div class="col s1 m1 l1"></div>
-          <input type="text" class="col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="Compare this user">
-          <div class="col s1 m1 l1"></div>
-          <div id="btnCompare" class="col s2 m2 l2 btn-large roboto blue lighten-2 z-depth-4 mainForm">Compare</div>
-          <div class="col s1 m1 l1"></div>
-          <input class="col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions TO this uniqname" type="text" id="user2Input" placeholder="to this user"></div>
-          <div class="row"></div>
-        </div>
-    <div class="fadeInEffect row blue white-text" id="useroutputarea">
-      <div class="col s12 m6 l6 blue white-text center" id="user1"></div>
-      
-      <div class="col s12 m6 l6 blue white-text center" id="user2"></div>
-    </div>
-    
-  </body>
   <script>
     require('./renderer.js')
   </script>
+  </body>
 </html>
  
