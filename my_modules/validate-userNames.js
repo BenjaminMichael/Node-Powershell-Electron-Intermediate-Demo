@@ -21,12 +21,11 @@ validateMyList = function (u1,u2){
     if (!(u1 !=="" && u2!=="")){
         setTimeout(function(){
             resetMyForm()
+            //we should do an erroir message in red at the top
         },1000)  //if you dont wait for 1000 its too fast for some reason.  thanks DOM!
         return
     }
 
-    
-    //do an animation
     let ps = new powershell({
         executionPolicy: 'Bypass',
         noProfile: true
@@ -45,8 +44,8 @@ validateMyList = function (u1,u2){
             return
         }else{
                 listOfGroups(data[0].DN,data[1].DN,u1,u2)
-                $('#user1').append(`<h4>${(data[0].UserName).toString()}</h4>`)
-                $('#user2').append(`<h4>${(data[1].UserName).toString()}</h4><ul class="blue darken-1"><span class="amber-text text-lighten-1">`)
+                $('#user1').append(`<h4 class="wildwestfontStriped brown-text text-darken-3">${(data[0].UserName).toString()}</h4>`)
+                $('#user2').append(`<h4 class="wildwestfontStriped brown-text text-darken-3">${(data[1].UserName).toString()}</h4><ul class="blue darken-1"><span class="amber-text text-lighten-1">`)
             }
         })
     

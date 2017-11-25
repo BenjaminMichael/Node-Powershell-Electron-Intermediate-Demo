@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "clippyjs": "0.0.3",
-    "eslint": "^4.7.2",
+    "eslint": "^4.11.0",
     "immutable": "^3.8.1",
     "jquery": "^3.2.1",
     "materialize-css": "^0.100.2",

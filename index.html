@@ -25,15 +25,21 @@
         font-family: 'Roboto';
         src: url("./node_modules/materialize-css/dist/fonts/roboto/Roboto-Bold.woff");
       }
+      #purplePattern{
+        width:100%;
+              }
       .roboto{
         font-family:'Roboto'
+      }
+      .wildwestfontStriped{
+        font-family:'RioGrande Striped';
       }
       .overflow {
         text-overflow:ellipsis;
       }
       h1{
-        font-family: 'RioGrande Striped';
-        font-size:2em;
+        font-family: 'RioGrande';
+        font-size:3em;
         
       }
       h4{
@@ -58,6 +64,9 @@
 .hidden{
        display:none;
     }
+    #queryingSign{
+min-height:20vh;
+    }
 #useroutputarea{
   height:85vh;
   display:none;
@@ -67,13 +76,22 @@
 }
 .wildwestfont{
   font-family: 'RioGrande';
+  font-size:1.7em;
 }
 .thinMargin{
   margin-top:10px;
 }
+.cropDiv{
+  overflow:hidden;
+  height:150px;
+  margin-bottom:0;
+}
+#historyTab{
+  min-height:25vh;
+}
     </style>
   </head>
-  <body>
+  <body><main>
 
     <div id="clouds">
 
@@ -95,10 +113,10 @@
           <li class="tab col s5">
             <span class="coaster">
               <span class="coaster__stitch"></span>
-              <span class="coaster__brand wildwestfont brown-text text-darken-4" id="yourNameHere">your name here</span>
+              <span class="coaster__brand wildwestfont brown-text text-darken-4" id="yourNameHere"></span>
             </span> 
           </li>
-          <li class="tab col s2"><a class="active" href="#welcomeTab"><div class="row translucent">Welcome</div></a></li>
+          <li class="tab col s2"><a class="active" href="#welcomeTab"><div class="row">Welcome</div></a></li>
           <li class="tab col s2"><a  href="#test1">Compare</a></li>
           <li class="tab col s2"><a href="#historyTab">History</a></li>
         </ul>
@@ -109,13 +127,10 @@
       <div class="cloud x2"></div>
 
     <!--Welcome Tab -->
-    <div id="welcomeTab" class="row dark-primary-color translucent">
+    <div id="welcomeTab" class="row woodSign dark-primary-color">
       <div class="customPadding row">
-        <div class="col s12 m12 l12 wood-color center z-depth-3 brown-text text-darken-4 thinMargin"><h1>AD Group Wrangler</h1></div>
-        <div class="col s12 m12 l12 blue-text text-lighten-4">A simple tool for comparing AD Group Memberships.</div>
-      </div>
-      <div class="col s6 m6 l6">
-        <img src="https://static.vecteezy.com/system/resources/previews/000/117/956/original/vector-cowboy-and-wild-west-pack.jpg" class="responsive-img">
+        <div class="col s12 m12 l12  center orange-text text-lighten-2 thinMargin"><h1>(AD Group Wrangler)</h1></div>
+        <div class="col s12 m12 l12 blue-text text-lighten-4"><span id="moduleInstallPrompt">Loading...</span></div>
       </div> 
     </div>
 
@@ -124,14 +139,14 @@
         <div class="rowblue-text text-darken-1" id="userinputarea">
               <div class="row">
                 <div class="col s2 m2 l2"></div>
-                <input type="text" class="light-blue-text col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="Compare this user">
+                <input type="text" class="brown-text text-darken-3 col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="Compare this user">
                 <div class="col s1 m1 l1"></div>
                 <div id="btnCompare" class="col accent-color center z-depth-4 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Compare"><i class="material-icons white-text">group</i></div>
                 <div class="col s1 m1 l1"></div>
-                <input class="light-blue-text col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions TO this uniqname" type="text" id="user2Input" placeholder="to this user"></div>
+                <input type="text" class="brown-text text-darken-3 col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions TO this uniqname" id="user2Input" placeholder="to this user"></div>
               </div>
-            <div class="topMargin row wood-color center z-depth-2  primary-text-color">text goes here</div>
-          <div class="row blue white-text darken-2" id="useroutputarea">
+            <div id="queryingSign" class="hidden topMargin row wood-color center z-depth-2  primary-text-color wildwestfont">querying Active Directory...</div>
+          <div class="row white-text darken-2" id="useroutputarea">
             <div class="col s12 m6 l6 orange accent-1 white-text center" id="user1"></div>        
             <div class="col s12 m6 l6 orange accent-1 white-text center" id="user2"></div>
           </div>
@@ -142,10 +157,15 @@
 
       </div> <!-- End of Clouds -->
 
-    
+    </main>
   <script>
     require('./renderer.js')
   </script>
   </body>
+  <footer class="page-footer orange accent-2">
+    <div class="row cropDiv">
+        <img src="./img/purple.jpg" class="responsive-img" id="purplePattern">     
+      </div> 
+  </footer>
 </html>
  

@@ -42,16 +42,16 @@ listOfGroups = function(u1DN, u2DN, u1Name, u2Name){
                 i++
             })
             
-            let letUser2Output = "<ul>"
+            let letUser2Output = `<ul class="listFont">`
             user2UniqGroups.forEach(function (value){
                 let groupName = value.split(",")
-                letUser2Output += `<li class="z-depth-3 tooltipped" data-position="bottom" data-delay="50" data-tooltip="This is a group ${u1Name} is not in.">${groupName[0].slice(3)}</li>`
+                letUser2Output += `<li class="z-depth-3 wood-color tooltipped" data-position="bottom" data-delay="50" data-tooltip="This is a group ${u1Name} is not in.">${groupName[0].slice(3)}</li>`
             })
 
             matchingGroups.forEach(function (value){
                 let groupName = value.split(",")
-                letUser1Output +=  `<li class="blue z-depth-3 tooltipped darken-2" data-position="bottom" data-delay="50" data-tooltip="This is a group both users are already in.">${groupName[0].slice(3)}</li>`
-                letUser2Output += `<li class="blue z-depth-3 tooltipped darken-2" data-position="bottom" data-delay="50" data-tooltip="This is a group both users are already in.">${groupName[0].slice(3)}</li>`
+                letUser1Output += `<li class="brown z-depth-3 tooltipped darken-4" data-position="bottom" data-delay="50" data-tooltip="This is a group both users are already in.">${groupName[0].slice(3)}</li>`
+                letUser2Output += `<li class="brown z-depth-3 tooltipped darken-4" data-position="bottom" data-delay="50" data-tooltip="This is a group both users are already in.">${groupName[0].slice(3)}</li>`
             })
 
             letUser1Output +='</ul>'
@@ -60,12 +60,14 @@ listOfGroups = function(u1DN, u2DN, u1Name, u2Name){
             $('#user1').append(letUser1Output) //append HTML
             $('#user2').append(letUser2Output) // to the DOM
             $('#emptyRow').empty() //remove the prelaunch progressbar
+            $('#queryingSign').toggleClass('hidden')
             $('#useroutputarea').slideToggle("slow", "swing")
+            
             $('.tooltipped').tooltip() //dynamic tooltip init
 
             //this will be the upper limit for our literator i in a recursive function rapidfirepromise(i)
             const max=adGroupDNs.length
-            
+
             function rapidFirePromise(i){
                 var  elementID=`#LED-${i}` 
                 $(elementID).addClass("led-yellow").removeClass("led-blue")
@@ -102,7 +104,10 @@ listOfGroups = function(u1DN, u2DN, u1Name, u2Name){
                         if (i<max-1){i++;return rapidFirePromise(i)}
                     })
 
-//custom error handler?
+//custom error handler
+// Unable to find a default server with Active Directory Web Services running - means it couldnt contact AD check your connection to the network(offer a button to restart)
+//
+//Cannot find an object with identity: 'test' under: 'DC=adsroot,DC=itcs,DC=umich,DC=edu'. is an invalid user name. give them a reset button
 
             .catch(err => { 
                 
