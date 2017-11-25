@@ -97,7 +97,12 @@ listOfGroups = function(u1DN, u2DN, u1Name, u2Name){
             
                             psAsync.invoke()
                             .then(output => {
-                                if(output==="Success!"){$(`#copyGroupBtn${i}`).addClass('disabled').removeClass("green")}else{$(this).addClass("amber")}
+                                if(output==="Success!"){
+                                    $(`#copyGroupBtn${i}`).addClass('disabled').removeClass("green")
+                                }else{
+                                    $(`#copyGroupBtn${i}`).addClass("amber").removeClass("green")
+                                    //more custom error handling
+                                }
                             })
                         })
                     }
@@ -111,8 +116,8 @@ listOfGroups = function(u1DN, u2DN, u1Name, u2Name){
 
             .catch(err => { 
                 
-                //make LED red with a tooltip of the error text
-                $(elementID).html(`<a class="btn-large red white-text  tooltipped" data-position="bottom" data-delay="50" data-tooltip="${err}">ERROR</a>`)
+                //in the case of an error in the promise, make the LED red with a tooltip of the error text
+                $(elementID).html(`<div class="btn-large red white-text tooltipped" data-position="bottom" data-delay="50" data-tooltip="${err}">ERROR</div>`)
 
                 ps.dispose()
                     })        

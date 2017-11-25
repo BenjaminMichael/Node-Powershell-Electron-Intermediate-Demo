@@ -14,7 +14,7 @@ html,
   font-size:1em;
   min-height:100vh;
   width:100vw;
-  overflow:auto;
+  overflow:none;
 }
 main{
     flex: 1 0 auto;
@@ -92,8 +92,9 @@ main{
   background-color:#c19b6c!important;
   padding:3px!important;
 }
-input .indicator{
-  color:#FFFFFF!important;
+input[type=text] .indicator{
+  border-bottom: 1px solid #FFFFFF!important;
+  box-shadow: 0 1px 0 0 #FFFFFF!important;  
 }
 /* valid color */
    .input-field input[type=text].valid {

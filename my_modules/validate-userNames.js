@@ -21,8 +21,8 @@ validateMyList = function (u1,u2){
     if (!(u1 !=="" && u2!=="")){
         setTimeout(function(){
             resetMyForm()
-            //we should do an erroir message in red at the top
-        },1000)  //if you dont wait for 1000 its too fast for some reason.  thanks DOM!
+            $('#redMessageBar').html(`You must enter 2 uniqnames`)
+        },1000)  //if you dont wait for 1000 its too fast for the other animations
         return
     }
 

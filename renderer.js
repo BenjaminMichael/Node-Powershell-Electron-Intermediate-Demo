@@ -33,13 +33,31 @@ $(document).ready(() => {
     ps.invoke()
     .then(output => {
         $('#yourNameHere').html(output)
+        let nestedPS = new powershell({
+            executionPolicy: 'Bypass',
+            noProfile: true
+        })
+       ps.addCommand(`test-path "C:\\Program Files\\WindowsPowerShell\\Modules\\PowerShellAccessControl"`)
+       ps.invoke()
+       .then(output =>{
+           if ((output.indexOf('True')) !== -1){
+               $('.disabled').removeClass('disabled')
+               $('#moduleInstallPrompt').html('click on Compare to begin.')
+            }else{
+                //link to modal from this button
+                $('#moduleInstallPrompt').html(`Before you begin &nbsp;<div class="btn chip orange accent-2 brown-text text-darken-3 z-depth-2">Click here</div>to install PS Access Control Module`)
+           }
+       })
+       .catch(err=>{
+           //do nothing
+       })
+       
+       
     })
     .catch(err => {
      ps.dispose()
     })
    
-    //determine if the required PS Module is installed
-
     $('#btnCompare').click(() => {
         $('.mainForm').addClass("disabled")
         //needs a button to cancel

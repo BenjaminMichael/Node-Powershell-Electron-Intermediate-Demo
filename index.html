@@ -89,6 +89,9 @@ min-height:20vh;
 #historyTab{
   min-height:25vh;
 }
+.dismissChip{
+  line-height: 16px;
+}
     </style>
   </head>
   <body><main>
@@ -101,9 +104,11 @@ min-height:20vh;
     <!-- Error messages row -->
     <span class="row justify-content-center top-buffer">
       <div class="alert alert-danger red white-text" role="alert" style="display: block">
-        <strong>
-          <div id="redMessageBar"></div>
-        </strong>
+        <div class="customPadding">
+          <strong>
+            <div id="redMessageBar"></div>
+          </strong>
+        </div>
       </div>
     </span>
 
@@ -117,8 +122,8 @@ min-height:20vh;
             </span> 
           </li>
           <li class="tab col s2"><a class="active" href="#welcomeTab"><div class="row">Welcome</div></a></li>
-          <li class="tab col s2"><a  href="#test1">Compare</a></li>
-          <li class="tab col s2"><a href="#historyTab">History</a></li>
+          <li class="tab col s2 disabled"><a href="#test1">Compare</a></li>
+          <li class="tab col s2 disabled"><a href="#historyTab">History</a></li>
         </ul>
       </div>
 
@@ -130,13 +135,13 @@ min-height:20vh;
     <div id="welcomeTab" class="row woodSign dark-primary-color">
       <div class="customPadding row">
         <div class="col s12 m12 l12  center orange-text text-lighten-2 thinMargin"><h1>(AD Group Wrangler)</h1></div>
-        <div class="col s12 m12 l12 blue-text text-lighten-4"><span id="moduleInstallPrompt">Loading...</span></div>
+        <div class="col s12 m12 l12 orange-text text-accent-1 center"><span id="moduleInstallPrompt">Loading dependencies...</span></div>
       </div> 
     </div>
 
     <!--Compare Tab -->
       <div id="test1" class="row orange accent-1 verticalPadding">
-        <div class="rowblue-text text-darken-1" id="userinputarea">
+        <div class="row brown-text text-darken-1" id="userinputarea">
               <div class="row">
                 <div class="col s2 m2 l2"></div>
                 <input type="text" class="brown-text text-darken-3 col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="Compare this user">
