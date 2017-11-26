@@ -1,15 +1,8 @@
-//render.js
-//                                                                                              q
-//see main./js for stuff that controls the window and beyond.  come here for everything that happens inside the window
-//
 //todo:
-//validate input
-//the initial animation is good but it doesnt take long enough we need more animations and/or a progress bar
 //install PSDependencies
-//function to add them to the group needs finishing and an animation
-//custom error handler for ADGroupCompare.js both in the first promise and the rapidfirepromise
+//history
+//custom error handlers
 //adgroupcompare.js line 84 we need to give them an opportunity to switch the users
-//intelligent hints about groups that end in -RDP and maybe other domain specific groups?  this would make another type of circle btn-large with the info icon that has a tooltip asbout how to add
 
 const powershell = require('node-powershell')
 
@@ -22,6 +15,7 @@ require('./my_modules/validate-userNames.js')
 $(document).ready(() => {
     $(".tabs>li>a").css("text-color", '#FFFFFF'); //a funky fix for sass
     $('.tooltipped').tooltip({delay: 50})//initialize tooltips
+    
     //determine the current logged in user and update the screen
     let ps = new powershell({
         executionPolicy: 'Bypass',
@@ -45,9 +39,13 @@ $(document).ready(() => {
                $('#moduleInstallPrompt').html('click on Compare to begin.')
             }else{
                 //link to modal from this button
-                $('#moduleInstallPrompt').html(`Before you begin &nbsp;<div class="btn chip orange accent-2 brown-text text-darken-3 z-depth-2">Click here</div>to install PS Access Control Module`)
-           }
-       })
+                $('#moduleInstallPrompt').hide('fast')
+                $('#PSModInstallText').show('fast')
+                $('#clickHerePSModuleInstall').click(() => {
+                    //do my func
+                })
+               }
+            })
        .catch(err=>{
            //do nothing
        })

@@ -55,6 +55,13 @@ function createMenu() {
   Menu.setApplicationMenu(menu)
 }
 
+
+global.installPowerShellAccessControlModule = function () {
+  var moduleInstallPath = `${app.getAppPath()}\\PSDependencies\\PowerShellAccessControl`
+  console.log(moduleInstallPath)
+  // put this in the powershell C:\\Program Files\\WindowsPowerShell\\Modules'
+  }
+
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 1024, height: 768})
