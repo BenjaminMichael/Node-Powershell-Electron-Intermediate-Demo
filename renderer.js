@@ -8,9 +8,10 @@
 //get the current user's userName
 var path = require('path');
 var userName = process.env['USERPROFILE'].split(path.sep)[2];
+
 const powershell = require('node-powershell');
 window.$ = window.jQuery = require('./node_modules/jquery/dist/jquery.js'); // I use this when the NPM 'node_modules' folder is in my project and NOT installed globally.
-window.Hammer = require('./node_modules/materialize-css/js/hammer.min.js'); // For the purpoises of this trick the sequence of these 3 requires is important
+window.Hammer = require('./node_modules/materialize-css/js/hammer.min.js'); // The sequence of ALL! of these requires is important
 require('materialize-css');
 require('./my_modules/validate-userNames.js');
 
