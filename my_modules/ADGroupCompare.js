@@ -1,14 +1,29 @@
 const { Set } = require('immutable');
 const powershell = require('node-powershell');
 
+/*
+FUNCTION: listOfGroups
+ @param {String} u1DN distinguished name of "user 1"
+ @param {String} u2DN distinguished name of "user 2"
+ @param {String} u1Name hort name of "user 1"
+ @param {String} u2Name are the same AD User Object's short names
 
+ Updates the DOM with a list of both matching and nonmatching group memberships.
+ Then it checks User 1's nonmatching groups to see if the current user has permission to add
+ anyone to the group and it updates the DOM accordingly.
 
+PowerShell scripts:
+get-adPrincipalGroups to build 2 lists of group memberships to compare
+get-effective-access to see if you can add user 2 to any of user 1's groups
+add-adgroupmember to add user 2 to user 1's groups 1 at a time
+
+*/
 listOfGroups = function(u1DN, u2DN, u1Name, u2Name){
         
             let ps = new powershell({
                 executionPolicy: 'Bypass',
                 noProfile: true
-            });
+            }); 
         
             ps.addCommand(`./get-adPrincipalGroups.ps1 -user1 '${u1DN}' -user2 '${u2DN}'`);
 
@@ -97,6 +112,7 @@ listOfGroups = function(u1DN, u2DN, u1Name, u2Name){
             
                             psAsync.invoke()
                             .then(output => {
+                                console.log('epic debug');
                                 if(output==="Success!"){
                                     $(`#copyGroupBtn${i}`).addClass('disabled').removeClass("green");
                                 }else{

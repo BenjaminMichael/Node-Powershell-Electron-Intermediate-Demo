@@ -18,11 +18,10 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1",
-    "electron": "^1.6.15"
+    "electron": "^1.8.1"
   },
   "dependencies": {
-    "clippyjs": "0.0.3",
-    "eslint": "^4.12.0",
+    "eslint": "^4.13.1",
     "immutable": "^3.8.2",
     "jquery": "^3.2.1",
     "materialize-css": "^0.100.2",
