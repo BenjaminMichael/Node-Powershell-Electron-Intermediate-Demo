@@ -7,6 +7,7 @@ FUNCTION: listOfGroups
  @param {String} u2DN distinguished name of "user 2"
  @param {String} u1Name hort name of "user 1"
  @param {String} u2Name are the same AD User Object's short names
+ @param {String} currentUserName is UserName from Render.js
 
  Updates the DOM with a list of both matching and nonmatching group memberships.
  Then it checks User 1's nonmatching groups to see if the current user has permission to add
@@ -18,15 +19,13 @@ get-effective-access to see if you can add user 2 to any of user 1's groups
 add-adgroupmember to add user 2 to user 1's groups 1 at a time
 
 */
-listOfGroups = function(u1DN, u2DN, u1Name, u2Name){
+listOfGroups = function(u1DN, u2DN, u1Name, u2Name, userName){
         
             let ps = new powershell({
                 executionPolicy: 'Bypass',
                 noProfile: true
             }); 
-        
             ps.addCommand(`./get-adPrincipalGroups.ps1 -user1 '${u1DN}' -user2 '${u2DN}'`);
-
             ps.invoke()
             .then(output => {
             const user1and2JSONfromPS = JSON.parse(output);
@@ -92,44 +91,39 @@ listOfGroups = function(u1DN, u2DN, u1Name, u2Name){
                 noProfile: true
                 });
             
-                psChain.addCommand(`./get-effective-access.ps1 -adgroupdn '${adGroupDNs[i]}'`);
-
+                psChain.addCommand(`./get-effective-access.ps1 -adgroupdn '${adGroupDNs[i]}' -me ${userName} -i ${i}`);
                 psChain.invoke()
                 .then(output => {
-                    
-                    if(!output.includes("FullControl")){
+                const data = JSON.parse(output);                
+                    if(!data[0].Result.includes("FullControl")){
                     $(elementID).addClass("led-red").removeClass("led-yellow");
                 }else{
                     $(elementID).addClass("led-green").removeClass("led-yellow");
-                    $(`#copyGroupBtn${i}`).slideToggle("slow").click(function(){
-                    //first it should warn you about adding u2Name to adGroupNames[i]
+                    $(`#copyGroupBtn${data[1].bind_i}`).slideToggle("slow").click(function(){
+                        //really this should disable immediately so you cant spam it
+                        //needs a cool progress animation
                         let psAsync = new powershell({
                             executionPolicy: 'Bypass',
                             noProfile: true
                             });
                             
-                            psAsync.addCommand(`./add-adGroupMember.ps1 -user '${u2Name}' -group '${adGroupDNs[i]}'`);
+                            psAsync.addCommand(`./add-adGroupMember.ps1 -user '${u2Name}' -group '${adGroupDNs[data[1].bind_i]}' -i ${data[1].bind_i}`);
             
                             psAsync.invoke()
                             .then(output => {
-                                console.log('epic debug');
-                                if(output==="Success!"){
-                                    $(`#copyGroupBtn${i}`).addClass('disabled').removeClass("green");
+                                const data = JSON.parse(output);
+                                if(data[0].Result==="Success"){
+                                    console.log('debug1');
+                                    $(`#copyGroupBtn${data[0].bind_i}`).addClass('disabled').removeClass("green");
                                 }else{
-                                    $(`#copyGroupBtn${i}`).addClass("amber").removeClass("green");
-                                    //more custom error handling
+                                    $(`#copyGroupBtn${data[0].bind_i}`).addClass("amber").removeClass("green");
+                                    $('#redMessageBar').html(data[1]);
                                 }
                             });
                         });
                     }
                         if (i<max-1){i++;return rapidFirePromise(i);}
                     })
-
-//custom error handler
-// Unable to find a default server with Active Directory Web Services running - means it couldnt contact AD check your connection to the network(offer a button to restart)
-//
-//Cannot find an object with identity: 'test' under: 'DC=adsroot,DC=itcs,DC=umich,DC=edu'. is an invalid user name. give them a reset button
-
             .catch(err => { 
                 
                 //in the case of an error in the promise, make the LED red with a tooltip of the error text

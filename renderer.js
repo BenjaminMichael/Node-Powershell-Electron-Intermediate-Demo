@@ -1,9 +1,10 @@
 //todo:
-//finish the add group membership
-//history
-//make it look better overall
+//finish the add group membership - made it update DOM and have the option of undo
+// add the ability to undo afer you finish that group member add
+//make it look better overall  -standard tab design.  make the purple footger look good on big monitors
 //we need 2 button: reset / switch u1 u2
 //figure out how to require node-powershell only once
+//incorporate robocopy tab instead of history
 
 //get the current user's userName
 var path = require('path');
@@ -34,6 +35,6 @@ $(document).ready(() => {
                         <div class="indeterminate"></div>
                     </div>  
             </div>`);},500);
-            validateMyList($('#user1Input').val(), $('#user2Input').val());
+            validateMyList($('#user1Input').val(), $('#user2Input').val(),userName);
         });
     });

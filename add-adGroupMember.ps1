@@ -20,26 +20,26 @@ param (
     [Parameter (Mandatory=$True,Position=0)]
     [String]$user,
     [Parameter (Mandatory=$True,Position=1)]
-    [String]$group
+    [String]$group,
+    [Parameter (Mandatory=$True,Position=2)]
+    $i
     )
-$out=@()
+
+    $out=@()
+
 try{
-Add-ADGroupMember -Identity $group -Members $user
-$success=@{Success = $true}
-$myError=@{
-    Message = 'default'
-    Type = 'default'
-}
-$out+=@{ Value = $success}
-$out+=@{ Error = $myError }
+    Add-ADGroupMember -Identity $group -Members $user
+    $out += @{
+                Result = "Success"
+                bind_i = $i
+            }
 
 }
 catch [System.Management.Automation.RuntimeException] {
     $myError = @{
-        Message = $_.Exception.Message
-        Type = $_.FullyQualifiedErrorID
-    }
-    $out += $null
+                Message = $_.Exception.Message
+                Type = $_.FullyQualifiedErrorID
+            }
     $out += @{ Error = $myError }
 }
 

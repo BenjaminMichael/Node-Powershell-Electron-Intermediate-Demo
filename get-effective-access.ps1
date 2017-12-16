@@ -1,8 +1,15 @@
 ﻿param (
     [Parameter (Mandatory=$True,Position=0)]
-    [string]$adgroupdn
+    [string]$adgroupdn,
+    [Parameter (Mandatory=$True,Position=1)]
+    [string]$me,
+    [Parameter (Mandatory=$True,Position=2)]
+    $i
     )
 
-$me = & whoami
-$finalResult = Get-ADGroup $adgroupdn | Get-EffectiveAccess -Principal $me
-Write-Host $finalResult.effectiveAccess
+
+$finalResult = (Get-EffectiveAccess $adgroupdn -Principal $me).EffectiveAccess
+$out = @()
+$out += @{Result = $finalResult}
+$out +=@{bind_i = $i}
+$out | ConvertTo-Json | Out-Host
