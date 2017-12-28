@@ -19,7 +19,7 @@ get-effective-access to see if you can add user 2 to any of user 1's groups
 add-adgroupmember to add user 2 to user 1's groups 1 at a time
 
 */
-listOfGroups = function(u1DN, u2DN, u1Name, u2Name, userName){
+module.exports.listOfGroups = (u1DN, u2DN, u1Name, u2Name, userName) => {
         
             let ps = new powershell({
                 executionPolicy: 'Bypass',
@@ -38,14 +38,14 @@ listOfGroups = function(u1DN, u2DN, u1Name, u2Name, userName){
             let adGroupDNs=[];
             let i=0;
             user1UniqGroups.forEach((value)=>{
-                let groupName = value.split(",");
+                let groupName = value.split(",")[0].slice(3);
                 letUser1Output +=`
                     <li class="white blue-text row z-depth-2 valign-wrapper">
                         <div class="col s1 m1 l1">
                             <div class="${i==0?`led-yellow`:`led-blue`}" id="LED-${i}"></div>
                         </div>
                         <div class="col s11 m11 l11 blue-text text-darken-3 roboto">
-                            ${groupName[0].slice(3)}
+                            ${groupName}
                             <div class="hidden center btn-floating btn-large waves-effect waves-light right green white-text lighten-1 z-depth-2" id="copyGroupBtn${i}">
                                 <i class="close material-icons large">add</i>
                             </div>
@@ -58,26 +58,28 @@ listOfGroups = function(u1DN, u2DN, u1Name, u2Name, userName){
             
             let letUser2Output = `<ul class="listFont">`;
             user2UniqGroups.forEach(function (value){
-                let groupName = value.split(",");
-                letUser2Output += `<li class="z-depth-3 wood-color tooltipped" data-position="bottom" data-delay="50" data-tooltip="This is a group ${u1Name} is not in.">${groupName[0].slice(3)}</li>`;
+                let groupName = value.split(",")[0].slice(3);
+                letUser2Output += `<li class="z-depth-3 wood-color tooltipped" data-position="bottom" data-delay="50" data-tooltip="This is a group ${u1Name} is not in.">${groupName}</li>`;
             });
 
             matchingGroups.forEach(function (value){
-                let groupName = value.split(",");
-                letUser1Output += `<li class="brown z-depth-3 tooltipped darken-4" data-position="bottom" data-delay="50" data-tooltip="This is a group both users are already in.">${groupName[0].slice(3)}</li>`;
-                letUser2Output += `<li class="brown z-depth-3 tooltipped darken-4" data-position="bottom" data-delay="50" data-tooltip="This is a group both users are already in.">${groupName[0].slice(3)}</li>`;
+                let groupName = value.split(",")[0].slice(3);
+                letUser1Output += `<li class="brown z-depth-3 tooltipped darken-4" data-position="bottom" data-delay="50" data-tooltip="This is a group both users are already in.">${groupName}</li>`;
+                letUser2Output += `<li class="brown z-depth-3 tooltipped darken-4" data-position="bottom" data-delay="50" data-tooltip="This is a group both users are already in.">${groupName}</li>`;
             });
 
             letUser1Output +='</ul>';
             letUser2Output +='</ul>';
 
-            $('#user1').append(letUser1Output); //append HTML
-            $('#user2').append(letUser2Output); // to the DOM
+            $('#user1').append(letUser1Output); //append our newly made HTML to the DOM
+            $('#user2').append(letUser2Output); 
             $('#emptyRow').empty(); //remove the prelaunch progressbar
             $('#queryingSign').toggleClass('hidden');
-            $('#useroutputarea').slideToggle("slow", "swing");
+            $('#useroutputarea').slideToggle("slow", "swing");//spiffy animation
             
-            $('.tooltipped').tooltip(); //dynamic tooltip init
+            $('.tooltipped').tooltip(); //dynamic tooltip init for our new HTML
+
+            //at this point the user has two lists to visually compare.  This function keeps going in the background, checking to see if the current user has access to add members to these groups and if so it will add a button to the DOM for adding
 
             //this will be the upper limit for our literator i in a recursive function rapidfirepromise(i)
             const max=adGroupDNs.length;

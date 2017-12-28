@@ -14,24 +14,38 @@ validating the 2 uniqnames means 2 things:
 */
 const powershell = require('node-powershell');
 
-require('./ADGroupCompare.js');
+const myADGroupCompareModule = require('./ADGroupCompare.js');
 
-validateMyList = function (u1,u2,userName){
+module.exports.compareBtnClickedUpdateDOM = () => {
+    $('.mainForm').addClass("disabled");
+    $('#redMessageBar').empty();
+    setTimeout(function(){
+        $('#queryingSign').removeClass('hidden');
+        $('#userinputarea').slideToggle("slow");
+        $('#emptyRow').html(`<div class="row center">
+                                <div class="progress">
+                                    <div class="indeterminate"></div>
+                                </div>  
+                            </div>`);},500);
+    };
 
-    //DOM manipulation for when the process is cancelled
-    function resetMyForm(){
+
+module.exports.validateMyList = (u1,u2,userName) => {
+
+    function _resetMyForm(){ //DOM manipulation for when the process is cancelled
         $('.mainForm').removeClass("disabled");
         $('#userinputarea').slideToggle("slow");
         $('#emptyRow').empty();
     }
-    //automatically cancel process in the case of any blank username
-    if (!(u1 !=="" && u2!=="")){
+
+    if (u1 =="" && u2==""){ //Cancel process in the case of any blank username
         setTimeout(function(){
-            resetMyForm();
+            _resetMyForm();
             $('#redMessageBar').html(`You must enter 2 uniqnames`);
         },1000);  //if you dont wait for 1000 its too fast for the other animations
-        return;
+        return; //validateMyList is a function.  Here we Return to abruptly end the validation process due to as blank input field
     }
+
     let ps = new powershell({
         executionPolicy: 'Bypass',
         noProfile: true
@@ -42,16 +56,16 @@ validateMyList = function (u1,u2,userName){
         const data=JSON.parse(output);
         if(data[3].Value.ModuleFound ===false){$('#redMessageBar').html(`This program cannot check your effectice permissions without PowerShell Access Control Module.  Please reinstall the program as administrator.  You can download it from the internet and unzip it to C:\\Program Files\\WindowsPowerShell\\Modules but you will still need local admin to do that.`);};
         if(data[2].Error.Message !== "No error"){
-           resetMyForm();
-            $('#redMessageBar').html(data[2].Error.Message);
-            return;
+           _resetMyForm();
+           $('#redMessageBar').html(data[2].Error.Message);
+           return;
         }else{
                 $('#user1').append(`<h4 class="wildwestfontStriped brown-text text-darken-3">${(data[0].UserName).toString()}</h4>`);
                 $('#user2').append(`<h4 class="wildwestfontStriped brown-text text-darken-3">${(data[1].UserName).toString()}</h4><ul class="blue darken-1"><span class="amber-text text-lighten-1">`);
-                return listOfGroups(data[0].DN,data[1].DN,u1,u2,userName);
+                return myADGroupCompareModule.listOfGroups(data[0].DN,data[1].DN,u1,u2,userName);
             }
         })
     .catch(err=>{
-        psx.dispose();
+        ps.dispose();
         });    
 };
