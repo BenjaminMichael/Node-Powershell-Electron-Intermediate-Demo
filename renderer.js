@@ -1,13 +1,25 @@
 //todo:
-//finish the add group membership - made it update DOM and have the option of undo
-//add the ability to undo afer you finish that group member add
+//change all the bind_i to regular i
 //
-//make it look better overall  -standard tab design.  make the purple footger look good on big monitors
-//we need 2 button: reset / switch u1 u2
+//make it look better overall  -standard tab design.  make the purple footger look good on big monitors.  make an arow or something so its clear youre copying from user 1 to user2
+//we need 2 button: start over & swap u1 u2
 //
-//incorporate robocopy tab instead of history
+//is there any way to stop the horizontal scrolling with clouds css?
+//
+//set cursor focus in the compare field when tab is clicked
+//make hitting [enter] submit the form
+// left/right buttons toggle tabs
+//
+//easy animation: get-aduser success animation of some sort
+//
+//complete History tab
+//
+//
 
-//get the current user's userName
+
+
+//renderer.js
+
 var path = require('path');
 var userName = process.env['USERPROFILE'].split(path.sep)[2];
 
@@ -23,9 +35,13 @@ $(document).ready(() => {
     $('.tooltipped').tooltip({delay: 50}); //initialize tooltips
     $('#yourNameHere').html(userName); //update DOM with current users name
     
-   
+//user1Input and user2's are the 2 inputs
     $('#btnCompare').click(() => {
-        myModules.compareBtnClickedUpdateDOM();
-        myModules.validateMyList($('#user1Input').val(), $('#user2Input').val(),userName);
-        });
+        //check to see if its "ready" so it cant be activated more than one time
+       if($('#btnCompare').hasClass('ready')){
+        $('#btnCompare').removeClass('ready');
+            myModules.compareBtnClickedUpdateDOM();
+            myModules.validateMyList($('#user1Input').val(), $('#user2Input').val(),userName);
+       }
     });
+});
