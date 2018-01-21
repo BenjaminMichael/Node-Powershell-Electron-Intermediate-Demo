@@ -12,8 +12,6 @@ $finalResult = (Get-EffectiveAccess $adgroupdn -Principal $me).EffectiveAccess
 $out = @()
 $out += @{Result = $finalResult}
 <#
-We are binding the iterator i to bind_i because it is getting incremented asynchronously
-in the parent function and we need to know which array element this adgroup corresponds to.
 We called the PS Script with element[i] and the results will be bound to element[bind_i]
 #>
 $out +=@{

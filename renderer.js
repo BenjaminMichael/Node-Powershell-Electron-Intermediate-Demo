@@ -1,7 +1,6 @@
 //todo:
-//change all the bind_i to regular i
 //
-//make it look better overall  -standard tab design.  make the purple footger look good on big monitors.  make an arow or something so its clear youre copying from user 1 to user2
+//make it look better overall  -standard tab design.  make the purple footger look good on big monitors.  fix text input color
 //we need 2 button: start over & swap u1 u2
 //
 //is there any way to stop the horizontal scrolling with clouds css?
@@ -10,12 +9,6 @@
 //make hitting [enter] submit the form
 // left/right buttons toggle tabs
 //
-//easy animation: get-aduser success animation of some sort
-//
-//complete History tab
-//
-//
-
 
 
 //renderer.js
@@ -30,18 +23,23 @@ require('materialize-css');
 const myModules = require('./my_modules/validate-userNames.js');
 
 $(document).ready(() => {
-    
-    $(".tabs>li>a").css("text-color", '#FFFFFF'); //a funky fix for Materialize's sass
+    $(".tabs>li>a").css("text-color", '#FFFFFF'); //a funky fix for Materialize's sass to make the tabs font color white
     $('.tooltipped').tooltip({delay: 50}); //initialize tooltips
     $('#yourNameHere').html(userName); //update DOM with current users name
-    
-//user1Input and user2's are the 2 inputs
     $('#btnCompare').click(() => {
         //check to see if its "ready" so it cant be activated more than one time
        if($('#btnCompare').hasClass('ready')){
-        $('#btnCompare').removeClass('ready');
+            $('#btnCompare').removeClass('ready');
             myModules.compareBtnClickedUpdateDOM();
-            myModules.validateMyList($('#user1Input').val(), $('#user2Input').val(),userName);
+            myModules.validateMyList($('#user1Input').val(), $('#user2Input').val(), userName);
+       }
+    });
+    $('#btnRemove').click(() => {
+        //check to see if its "ready" so it cant be activated more than one time
+       if($('#btnRemove').hasClass('ready')){
+            $('#btnRemove').removeClass('ready');
+            myModules.removeBtnClickedUpdateDOM();
+            myModules.validateMySingleUser($('#removeGroupsInput').val(), userName);
        }
     });
 });

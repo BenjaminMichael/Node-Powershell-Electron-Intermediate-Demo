@@ -1,7 +1,7 @@
 const powershell = require('node-powershell');
 const ACTIONS = require('./myActions.js');
 /*
-FUNCTION: listOfGroups
+FUNCTION: listOfGroupsToCompare
  @param {JSON array element} names:
  {String} u1DN distinguished name of "user 1"
  {String} u2DN distinguished name of "user 2"
@@ -21,13 +21,34 @@ remove-adGroupMember to undo after a group has been added
 
 */
 
-module.exports.listOfGroups = (names) => {
-            let ps = new powershell({
-                executionPolicy: 'Bypass',
-                noProfile: true
-            }); 
-            ps.addCommand(`./get-adPrincipalGroups.ps1 -user1 '${names.user1DN}' -user2 '${names.user2DN}'`);
-            ps.invoke()
-            .then(output =>  {ACTIONS.COMPARE(output, names);} );
+module.exports.listOfGroupsToCompare = (names) => {
+    let ps = new powershell({
+        executionPolicy: 'Bypass',
+        noProfile: true
+    }); 
+    ps.addCommand(`./get-adPrincipalGroups.ps1 -user1 '${names.user1DN}' -user2 '${names.user2DN}'`);
+    ps.invoke()
+    .then(output =>  {
+        ps.dispose();
+        ACTIONS.COMPARE(output, names);
+    })
+    .catch(err=>{
+        ps.dispose();
+    });
+};
 
+module.exports.listOfGroupsToRemove = (names) => {
+    let ps = new powershell({
+        executionPolicy: 'Bypass',
+        noProfile: true
+    }); 
+    ps.addCommand(`./get-adPrincipalGroups.ps1 -user1 '${names.user1DN}'`);
+    ps.invoke()
+    .then(output =>  {
+        ps.dispose();
+        ACTIONS.REMOVE(output, names);
+    })
+    .catch(err=>{
+        ps.dispose();
+    });
 };

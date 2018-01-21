@@ -11,10 +11,12 @@ const _removeADGroup = (groupDN, user2, i) => {
         psxAsync.addCommand(`./remove-adGroupMember.ps1 -user '${user2}' -group '${groupDN}' -i ${i}`);
         psxAsync.invoke()
         .then(output => {
+            psxAsync.dispose();
             const data = JSON.parse(output);
             if(data[0].Result==="Success"){
                 thisCopyBtn.slideToggle('slow').removeClass('disabled').addClass('green').removeClass('pulse');
                 thisAddGroupEle.remove();
+                $('#historyTabList').append(`<li> Removed ${user2} from ${data[0].groupDN} </li>`);
             }else{
                 $('#redMessageBar').html(data[1]);
             }
@@ -32,6 +34,7 @@ const _addADGroup = (targetGroupName, names, i) => {
         psAsync.addCommand(`./add-adGroupMember.ps1 -user '${names.user2DN}' -group '${targetGroupName}' -i ${i}`);
         psAsync.invoke()
         .then(output => {
+            psAsync.dispose();
             const data = JSON.parse(output);
             if(data[0].Result==="Success"){
                 $(`#copyGroupBtn${data[0].bind_i}`).slideToggle('slow');
@@ -45,9 +48,11 @@ const _addADGroup = (targetGroupName, names, i) => {
                 </li>
                 </ul>
                 `);  
-                let myUndoBtn = $(`#undoGroupBtn${i}`);
+                $('#historyTabList').append(`<li> Added ${names.user2Name} to ${data[0].groupDN} </li>`);
+                let myUndoBtn = $(`#undoGroupBtn${data[0].bind_i}`);
                 myUndoBtn.click(() => {
                     myUndoBtn.addClass('pulse').addClass('disabled');
+                    //names.user2Name never changes  Thats why we don't have to bind it
                     _removeADGroup(data[0].groupDN, names.user2Name, data[0].bind_i);
                 });
             }else{
@@ -133,6 +138,7 @@ module.exports.COMPARE = (outputfromPS, names) => {
         psChain.addCommand(`./get-effective-access.ps1 -adgroupdn '${adGroupDNs[i]}' -me ${names.currentUser} -i ${i}`);
         psChain.invoke()
         .then(output => {
+            psChain.dispose();
         const data = JSON.parse(output);                
             if(!data[0].Result.includes("FullControl")){
             $(elementID).addClass("led-red").removeClass("led-yellow");
@@ -146,7 +152,7 @@ module.exports.COMPARE = (outputfromPS, names) => {
             }
         if (i<max-1){i++;return rapidFirePromise(i);}
             })
-    .catch(err => { 
+        .catch(err => { 
         
         //in the case of an error in the promise, make the LED red with a tooltip of the error text
         $(elementID).html(`<div class="btn-large red white-text tooltipped" data-position="bottom" data-delay="50" data-tooltip="${err}">ERROR</div>`);
@@ -156,4 +162,12 @@ module.exports.COMPARE = (outputfromPS, names) => {
     } //end of rapidFirePromise
 
 rapidFirePromise(0);
+};
+
+
+module.exports.REMOVE = (outputfromPS, names) => {
+    const outputAsJSON = JSON.parse(outputfromPS);
+    outputAsJSON.user1sGroups.forEach((val) => {
+        //need a target div to put output in
+    });
 };
