@@ -71,6 +71,10 @@ min-height:20vh;
   height:85vh;
   display:none;
 }
+#user1RemoveList{
+  height:85vh;
+  display:none;
+}
 #userinputarea{
   height:85vh;
 }
@@ -91,9 +95,6 @@ min-height:20vh;
 }
 .dismissChip{
   line-height: 16px;
-}
-#PSModInstallText{
-  display:none;
 }
 .undo{
   font-size:10px;
@@ -123,19 +124,19 @@ min-height:20vh;
     </span>
 
     <!-- Nav Row -->
-      <div class="row customPadding" id="topNav">
-        <ul class="tabs row brown darken-3 roundCorners">
-          <li class="tab col s5">
-            <span class="coaster">
-              <span class="coaster__stitch"></span>
-              <span class="coaster__brand wildwestfont brown-text text-darken-4" id="yourNameHere"></span>
-            </span> 
-          </li>
-          <li class="tab col s2"><a class="active" href="#welcomeTab"><div class="row">Welcome</div></a></li>
-          <li class="tab col s2"><a href="#compareTab">Compare</a></li>
-          <li class="tab col s2"><a href="#removeTab">Remove</a></li>
-        </ul>
-      </div>
+    <div class="row customPadding" id="topNav">
+      <ul class="tabs row brown darken-3 roundCorners">
+        <li class="tab col s5">
+          <span class="coaster">
+            <span class="coaster__stitch"></span>
+            <span class="coaster__brand wildwestfont brown-text text-darken-4" id="yourNameHere"></span>
+          </span> 
+        </li>
+        <li class="tab col s2"><a class="active" href="#welcomeTab"><div class="row">Welcome</div></a></li>
+        <li class="tab col s2"><a href="#compareTab">Compare</a></li>
+        <li class="tab col s2"><a href="#removeTab">Remove</a></li>
+      </ul>
+    </div>
 
       <!-- Just clouds -->
       <div class="cloud x1"></div>
@@ -145,7 +146,7 @@ min-height:20vh;
     <div id="welcomeTab" class="row woodSign dark-primary-color">
       <div class="customPadding row">
         <div class="col s12 m12 l12  center orange-text text-lighten-2 thinMargin"><h1>(AD Group Wrangler)</h1></div>
-        <div class="col s12 m12 l12 orange-text text-accent-1 center">Update 1/11/18: history tab now works but it only shows actions you completed during the current session.</div>
+        
       </div> 
     </div>
 
@@ -173,14 +174,15 @@ min-height:20vh;
           <div class="row center">
             <div class="col s4 m4 l4"></div>
             <input type="text" id="removeGroupsInput" class="white-text col s4 m4 l4 tooltipped" data-position="bottom" data-delay="50" data-tooltip="Remove groups from this uniqname" id="user1Input" placeholder="Enter a user to look up">
-           </div>
-           <div class="row center">
+          </div>
+          <div class="row center">
             <div class="btn large ready tooltipped" data-position="bottom" data-delay="50" data-tooltip="Click here to get a list of groups to remove." id="btnRemove">icon</div>
           </div>
-          <div id="queryingSignRemoveTab" class="hidden topMargin row wood-color center z-depth-2  primary-text-color wildwestfont">querying Active Directory...</div>
+        </div>
+        <div id="queryingSignRemoveTab" class="hidden topMargin row wood-color center z-depth-2  primary-text-color wildwestfont">querying Active Directory...</div>
+        <div class="col orange accent-1 white-text center" id="user1RemoveList"></div>
       </div>
-
-      </div> <!-- End of Clouds -->
+    </div> <!-- End of Clouds -->
 
     </main>
 

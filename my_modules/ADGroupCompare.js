@@ -33,6 +33,7 @@ module.exports.listOfGroupsToCompare = (names) => {
         ACTIONS.COMPARE(output, names);
     })
     .catch(err=>{
+        $('#redMessageBar').html(err);
         ps.dispose();
     });
 };
@@ -49,6 +50,7 @@ module.exports.listOfGroupsToRemove = (names) => {
         ACTIONS.REMOVE(output, names);
     })
     .catch(err=>{
+        $('#redMessageBar').html(err);
         ps.dispose();
     });
 };

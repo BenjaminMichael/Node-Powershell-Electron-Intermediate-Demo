@@ -166,8 +166,16 @@ rapidFirePromise(0);
 
 
 module.exports.REMOVE = (outputfromPS, names) => {
-    const outputAsJSON = JSON.parse(outputfromPS);
-    outputAsJSON.user1sGroups.forEach((val) => {
-        //need a target div to put output in
-    });
+    const myJSON = JSON.parse(outputfromPS);
+    const groupNamesList = Set(myJSON.user1sGroups);
+    var htmlOutput = `<ul>`;
+    groupNamesList.forEach((val) => {
+        htmlOutput+=`
+            <li class="z-depth-2 orange accent-1 black-text">${val.split(",")[0].slice(3)}</li>
+        `;});
+    htmlOutput+=`</ul>`;
+    $('#emptyRow').empty();
+    $('#user1RemoveList').append(htmlOutput);
+    $('#user1RemoveList').slideToggle("slow", "swing");
+    //$('#queryingSignRemoveTab').slideToggle('slow');
 };

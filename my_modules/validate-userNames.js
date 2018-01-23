@@ -61,7 +61,7 @@ module.exports.validateMySingleUser = (u1, userName) => {
         executionPolicy: 'Bypass',
         noProfile: true
     });
-    ps.addCommand('./get-ADUser',[{u1:`"${u1}"`}]);
+    ps.addCommand(`./get-ADUser -u1 ${u1}`);
     ps.invoke()
     .then(output=>{
         ps.dispose();
@@ -72,12 +72,15 @@ module.exports.validateMySingleUser = (u1, userName) => {
            $('#redMessageBar').html(data[2].Error.Message); //report the error
            return; //end the function
         }else{
+            
             let names= {
                 'user1Name' : u1,
                 'user1DN' : (data[0].DN).toString(),
                 'currentUser' : userName
             };
             //animation needed
+            //$('#queryingSignRemoveTab').slideToggle('slow');
+            
             return ADGroupCompare.listOfGroupsToRemove(names);
         }
     })
