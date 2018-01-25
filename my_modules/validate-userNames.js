@@ -48,6 +48,7 @@ module.exports.validateMySingleUser = (u1, userName) => {
         $('#removeuserinputarea').slideToggle("slow");
         $('#emptyRow').empty();
         $('#btnRemove').addClass('ready');
+        $('#queryingSignRemoveTab').slideToggle('slow');
     }
 
     if(u1 ===""){

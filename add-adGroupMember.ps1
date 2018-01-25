@@ -35,6 +35,7 @@ try{
                 groupName = $group.Split('=')[1].Split(',')[0]
                 groupDN = $group
                 user = $user
+                userName = $user.Split('=')[1].Split(',')[0]
             }
 
 }

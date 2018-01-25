@@ -10,8 +10,6 @@
     <link href="./css/custom.css" rel="stylesheet">
     <link href="./css/wildwildwest.css" rel="stylesheet">
 
-    
-    
     <style>
       @font-face {
         font-family:'RioGrande' ;
@@ -25,9 +23,6 @@
         font-family: 'Roboto';
         src: url("./node_modules/materialize-css/dist/fonts/roboto/Roboto-Bold.woff");
       }
-      #purplePattern{
-        width:100%;
-              }
       .roboto{
         font-family:'Roboto'
       }
@@ -35,7 +30,8 @@
         font-family:'RioGrande Striped';
       }
       .overflow {
-        text-overflow:ellipsis;
+        text-overflow:auto;
+        height:45vh;
       }
       h1{
         font-family: 'RioGrande';
@@ -72,7 +68,8 @@ min-height:20vh;
   display:none;
 }
 #user1RemoveList{
-  height:85vh;
+  margin-left:12.5vw;
+  width:50vw;
   display:none;
 }
 #userinputarea{
@@ -98,6 +95,13 @@ min-height:20vh;
 }
 .undo{
   font-size:10px;
+}
+.page-footer{
+  height:12vh;
+  width:100%;
+}
+.myTabs{
+  min-height:40vh;
 }
 @media screen and (max-width: 800px){
 #btnCompare{width:65px;}
@@ -139,11 +143,11 @@ min-height:20vh;
     </div>
 
       <!-- Just clouds -->
-      <div class="cloud x1"></div>
+      <div class="cloud x1" id="bigCloud"></div>
       <div class="cloud x2"></div>
 
     <!--Welcome Tab -->
-    <div id="welcomeTab" class="row woodSign dark-primary-color">
+    <div id="welcomeTab" class="myTabs row woodSign dark-primary-color">
       <div class="customPadding row">
         <div class="col s12 m12 l12  center orange-text text-lighten-2 thinMargin"><h1>(AD Group Wrangler)</h1></div>
         
@@ -151,7 +155,7 @@ min-height:20vh;
     </div>
 
     <!--Compare Tab -->
-      <div id="compareTab" class="row orange accent-1 verticalPadding">
+      <div id="compareTab" class="myTabs row orange accent-1 verticalPadding">
         <div class="row brown-text text-darken-1" id="userinputarea">
               <div class="row">
                 <div class="col s1 m1 l1"></div>
@@ -169,19 +173,27 @@ min-height:20vh;
       </div>
 
       <!--Remove Tab -->
-      <div id="removeTab" class="row text-primary-color dark-primary-color verticalPadding">
-        <div class="row brown-text text-lighten-1 " id="removeuserinputarea">
+      <div id="removeTab" class="myTabs row text-primary-color dark-primary-color verticalPadding">
+          <div class="row flow-text hidden" id="hiddenUndoBtnRow">
+            <div class="col s1 m1 l1"></div>
+            <div class="col s4 m4 l4 ">
+              <div class="z-depth-3 btn-floating btn-large waves-effect waves-light purple white-text disabled" id="undoRemBtn"><i class="material-icons">undo</i></div>&nbsp;&nbsp;Undo
+            </div>
+          </div>
+            
+        <div class="row brown-text center text-lighten-1 " id="removeuserinputarea">
           <div class="row center">
             <div class="col s4 m4 l4"></div>
-            <input type="text" id="removeGroupsInput" class="white-text col s4 m4 l4 tooltipped" data-position="bottom" data-delay="50" data-tooltip="Remove groups from this uniqname" id="user1Input" placeholder="Enter a user to look up">
+            <input type="text" id="removeGroupsInput" class="white-text col s5 m5 l5 tooltipped" data-position="bottom" data-delay="50" data-tooltip="Remove groups from this uniqname" id="user1Input" placeholder="Enter a user to look up">
           </div>
           <div class="row center">
             <div class="btn large ready tooltipped" data-position="bottom" data-delay="50" data-tooltip="Click here to get a list of groups to remove." id="btnRemove">icon</div>
           </div>
         </div>
         <div id="queryingSignRemoveTab" class="hidden topMargin row wood-color center z-depth-2  primary-text-color wildwestfont">querying Active Directory...</div>
-        <div class="col orange accent-1 white-text center" id="user1RemoveList"></div>
+        <div class="orange accent-1 white-text center" id="user1RemoveList"></div>
       </div>
+
     </div> <!-- End of Clouds -->
 
     </main>
@@ -190,9 +202,9 @@ min-height:20vh;
     require('./renderer.js')
   </script>
   </body>
-  <footer class="page-footer orange accent-2">
+  <footer class="z-depth-4 page-footer orange accent-2">
     <div class="row cropDiv">
-        <img src="./img/purple.jpg" class="responsive-img" id="purplePattern">     
+        <img src="./img/purple.svg" id="purplePattern">     
       </div> 
   </footer>
 </html>
