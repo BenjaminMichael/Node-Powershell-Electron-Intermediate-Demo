@@ -60,7 +60,7 @@ module.exports.COMPARE = (outputfromPS, names) => {
     user1UniqGroups.forEach((value)=>{
         const groupName = value.split(",")[0].slice(3);
         letUser1Output += DOM.compare_parseUser1Unique(i, groupName);
-        adGroupDNs[i]=value;
+        adGroupDNs[i]=value; //sets are great for doing the intersect and subtract methods but now that we've done that we really need the values to be indexed like an array
         i++;
     });
     let letUser2Output = `<ul class="listFont">`;
@@ -89,8 +89,7 @@ module.exports.COMPARE = (outputfromPS, names) => {
     //Next we check if the current user has access to add user2 to user1's groups.
     //If they can, it will add a green + button to the element.
 
-    const max=adGroupDNs.length;
-
+    const max=user1UniqGroups.count();
     function rapidFirePromise(i){
         var  elementID=`#LED-${i}`; 
         $(elementID).addClass("led-yellow").removeClass("led-blue");
@@ -103,14 +102,14 @@ module.exports.COMPARE = (outputfromPS, names) => {
         .then(output => {
             psChain.dispose();
         const data = JSON.parse(output);                
-            if(!data[0].Result.includes("FullControl")){
-            $(elementID).addClass("led-red").removeClass("led-yellow");
-        }else{
-            $(elementID).addClass("led-green").removeClass("led-yellow");
-            $(`#copyGroupBtn${data[1].bind_i}`).slideToggle("slow").click(function(){
-                //disable btn immediately so you cant spam it
-                $(this).addClass('disabled').addClass('pulse').removeClass("green");
-                _addADGroup(data[1].targetGroupName, names, data[1].bind_i);
+            if(!data.Result.includes("FullControl")){
+                $(elementID).addClass("led-red").removeClass("led-yellow");
+            }else{
+                $(elementID).addClass("led-green").removeClass("led-yellow");
+                $(`#copyGroupBtn${data.bind_i}`).slideToggle("slow").click(function(){
+                    //disable btn immediately so you cant spam it
+                    $(this).addClass('disabled').addClass('pulse').removeClass("green");
+                    _addADGroup(data.targetGroupName, names, data.bind_i);
                 });
             }
         if (i<max-1){i++;return rapidFirePromise(i);}
@@ -131,26 +130,30 @@ rapidFirePromise(0);
 module.exports.REMOVE = (outputfromPS, names) => {
 
     const _readdGroup = (reduxStoreOutput) => {
-        const {undoType, undoUserDN, undoGroupDN, undoCount} = reduxStoreOutput;
+        const {userDN, groupDN, undoCount, i} = reduxStoreOutput;
         if(undoCount===1){
             $('#undoRemBtn').addClass('disabled');
         };
-        /*
         let psReadd = new powershell({
             executionPolicy: 'Bypass',
             noProfile: true
             });
-            psReadd.addCommand();
+            psReadd.addCommand(`./add-adGroupMember.ps1 -user '${userDN}' -group '${groupDN}' -i ${i}`); //i doesnt matter
             psReadd.invoke()
             .then(output => {
-                psRem.dispose();
+                psReadd.dispose();
                 const data = JSON.parse(output);
+                if(data[0].Result==="Success"){
+                    DOM.remove_readd(data);
+                }else{
+                    $('#redMessageBar').html(data[1]);
+                }   
             })
             .catch((err) => {
                 console.log(err);
             });
-            */
-    };
+            
+        };
 
     const _remGroup = (groupDN, userDN, i) => {
         let psRem = new powershell({
@@ -163,11 +166,9 @@ module.exports.REMOVE = (outputfromPS, names) => {
                 psRem.dispose();
                 const data = JSON.parse(output);
                 if(data[0].Result==="Success"){
-                    $(`#REM-Row-${i}`).slideToggle('slow');
-                    Redux.REMEMBER(groupDN, userDN);
-                    $('#undoRemBtn').removeClass('disabled').click(() => {
-                        _readdGroup(Redux.UNDO());
-                    });
+                    $(`#REM-Row-${data[0].bind_i}`).slideToggle('slow');
+                    Redux.REMEMBER(data[0].userDN, data[0].groupDN, data[0].bind_i);
+                    $('#undoRemBtn').removeClass('disabled');
                 }else{
                     $('#redMessageBar').html(data[1]);
                 }
@@ -182,17 +183,17 @@ module.exports.REMOVE = (outputfromPS, names) => {
     const groupNamesList = Set(myJSON.user1sGroups);
     let i=0;
     let adGroupDNsToRem=[];
-    var htmlOutput = `<ul class="brown lighten-3">`;
+    var htmlOutput = `<ul class="brown lighten-3" id="remGroupUL">`;
     groupNamesList.forEach((val) => {
         //to parse the group name out of the DN use val.split(",")[0].slice(3) 
         htmlOutput+=`
-        <li class="orange accent-2 row z-depth-2 valign-wrapper" id="REM-Row-${i}">
+        <li class="white row z-depth-2 valign-wrapper" id="REM-Row-${i}">
         <div class="col s1 m1 l1">
             <div class="${i===0?`led-yellow`:`led-blue`}" id="REM-LED-${i}"></div>
         </div>
         <div class="col s11 m11 l11 brown-text text-darken-3 roboto">
         ${val.split(",")[0].slice(3)}
-            <div class="hidden center btn-floating btn-large waves-effect waves-light right green white-text lighten-1 z-depth-2" id="REM-copyGroupBtn${i}">
+            <div class="hidden center btn-floating btn-large waves-effect waves-light right green white-text lighten-1 z-depth-2" id="REM-ADGroupBtn${i}">
                 <i class="close material-icons large">remove</i>
             </div>
         </div>
@@ -206,12 +207,15 @@ module.exports.REMOVE = (outputfromPS, names) => {
     $('#user1RemoveList').append(htmlOutput);
     $('#user1RemoveList, #hiddenUndoBtnRow').slideToggle("slow", "swing");
     $('#queryingSignRemoveTab').slideToggle('slow');
+    $('#remUserHeading').html(`<h3>(${names.user1Name})</h3>`);
+    $('#undoRemBtn').click(() => {
+        _readdGroup(Redux.UNDO());
+    });
 
     let max = adGroupDNsToRem.length;
 
     function multiPromise(i){
-        var  elementID=`#REM-LED-${i}`; 
-        $(elementID).addClass("led-yellow").removeClass("led-blue");
+        $(`#REM-LED-${i}`).addClass("led-yellow").removeClass("led-blue");
         let psChain = new powershell({
         executionPolicy: 'Bypass',
         noProfile: true
@@ -220,23 +224,23 @@ module.exports.REMOVE = (outputfromPS, names) => {
         psChain.invoke()
         .then(output => {
         const data = JSON.parse(output);
-        psChain.dispose();                
-            if(!data[0].Result.includes("FullControl")){
-            $(elementID).addClass("led-red").removeClass("led-yellow");
+        psChain.dispose();
+        const  elementID=$(`#REM-LED-${data.bind_i}`);   
+        if(!data.Result.includes("FullControl")){
+            elementID.addClass("led-red").removeClass("led-yellow");
         }else{
-            $(elementID).addClass("led-green").removeClass("led-yellow");
-            $(`#REM-copyGroupBtn${data[1].bind_i}`).slideToggle("slow").click(function(){
+            elementID.addClass("led-green").removeClass("led-yellow");
+            $(`#REM-ADGroupBtn${data.bind_i}`).slideToggle("slow").click(function(){
                 //disable btn immediately so you cant spam it
-                $(this).addClass('disabled').addClass('pulse').removeClass("green");
-                _remGroup(data[1].targetGroupName, names.user1DN, data[1].bind_i);
+                $(this).addClass('disabled pulse');
+                _remGroup(data.targetGroupName, names.user1DN, data.bind_i);
                 });
             }
         if (i<max-1){i++;return multiPromise(i);}
             })
         .catch(err => { 
-        //in the case of an error in the promise, make the LED red with a tooltip of the error text
-        $(elementID).html(`<div class="btn-large red white-text tooltipped" data-position="bottom" data-delay="50" data-tooltip="${err}">ERROR</div>`);
-            });        
+            $('#redMessageBar').html(err);
+        });        
     } //end of multiPromise
 
 multiPromise(0);

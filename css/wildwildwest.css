@@ -69,10 +69,8 @@ main{
   padding-top:2%;
   padding-bottom:2%;
 }
-#btnCompare{
-  height:60px;
-  width:200px;
-  line-height:75px;
+.btnPaddingZero{
+  padding:0px;
 }
 
 .tab a.active {

@@ -55,3 +55,8 @@ module.exports.compare_removeADGroup = (output =>{
     }
     return;
 });
+
+module.exports.remove_readd = ((data) => {
+    $(`#REM-Row-${data[0].bind_i}`).slideToggle('slow');
+    $(`#REM-ADGroupBtn${data[0].bind_i}`).removeClass('disabled pulse')
+});

@@ -68,7 +68,7 @@ min-height:20vh;
   display:none;
 }
 #user1RemoveList{
-  margin-left:12.5vw;
+  margin-left:22.5vw;
   width:50vw;
   display:none;
 }
@@ -103,9 +103,10 @@ min-height:20vh;
 .myTabs{
   min-height:40vh;
 }
-@media screen and (max-width: 800px){
-#btnCompare{width:65px;}
+#removeGroupsInputForm{
+  padding:3%;
 }
+
     </style>
   </head>
   <body><main>
@@ -161,7 +162,9 @@ min-height:20vh;
                 <div class="col s1 m1 l1"></div>
                 <input type="text" class="brown-text text-darken-3 col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="Compare this user">
                 <div class="col s1 m1 l1"></div>
-                <div id="btnCompare" class="col ready accent-color center z-depth-4 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Compare"><i class="material-icons white-text">group</i></div>
+                <div class="col">
+                  <div id="btnCompare" class="btnPaddingZero ready accent-color btn-floating btn-large center z-depth-4 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Compare"><i class="material-icons white-text">group</i></div>
+                </div>
                 <div class="col s1 m1 l1"></div>
                 <input type="text" class="brown-text text-darken-3 col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions TO this uniqname" id="user2Input" placeholder="to this user"></div>
               </div>
@@ -173,26 +176,32 @@ min-height:20vh;
       </div>
 
       <!--Remove Tab -->
-      <div id="removeTab" class="myTabs row text-primary-color dark-primary-color verticalPadding">
-          <div class="row flow-text hidden" id="hiddenUndoBtnRow">
-            <div class="col s1 m1 l1"></div>
-            <div class="col s4 m4 l4 ">
-              <div class="z-depth-3 btn-floating btn-large waves-effect waves-light purple white-text disabled" id="undoRemBtn"><i class="material-icons">undo</i></div>&nbsp;&nbsp;Undo
-            </div>
-          </div>
-            
-        <div class="row brown-text center text-lighten-1 " id="removeuserinputarea">
-          <div class="row center">
+      <div id="removeTab" class="myTabs row verticalPadding">
+        
+        <!-- hidden part --> 
+        <div class="row flow-text hidden" id="hiddenUndoBtnRow">
+          <div class="row woodSign center">
             <div class="col s4 m4 l4"></div>
-            <input type="text" id="removeGroupsInput" class="white-text col s5 m5 l5 tooltipped" data-position="bottom" data-delay="50" data-tooltip="Remove groups from this uniqname" id="user1Input" placeholder="Enter a user to look up">
+             <div class="col center wildwestfont orange-text text-accent-2 valign-wrapper" id="remUserHeading"></div>
           </div>
-          <div class="row center">
-            <div class="btn large ready tooltipped" data-position="bottom" data-delay="50" data-tooltip="Click here to get a list of groups to remove." id="btnRemove">icon</div>
-          </div>
+          <div class="row">
+              <div class="col s1 m1 l1"></div>
+              <div class="col s2 m2 l2 ">
+                <div class="z-depth-3 btn-floating btn-large waves-effect waves-light purple white-text disabled" id="undoRemBtn"><i class="material-icons">undo</i></div>&nbsp;&nbsp;Undo
+               </div>
+              </div>
         </div>
-        <div id="queryingSignRemoveTab" class="hidden topMargin row wood-color center z-depth-2  primary-text-color wildwestfont">querying Active Directory...</div>
-        <div class="orange accent-1 white-text center" id="user1RemoveList"></div>
-      </div>
+        
+        <!--input form -->
+        <div class="row brown-text dark-primary-color center" id="removeuserinputarea">
+            <div class="col s3 m3 l3"></div>
+            <div class="col s6 m6 l6 card white z-depth-3 verticalPadding valign-wrapper" id="removeGroupsInputForm">
+                <div class="btnPaddingZero btn-floating btn-large accent-color large ready tooltipped z-depth-3" data-position="bottom" data-delay="50" data-tooltip="Click here to get a list of groups to remove." id="btnRemove"><i class="material-icons">search</i></div><input type="text" id="removeGroupsInput" class="col s9 m9 l9 tooltipped" data-position="top" data-delay="50" data-tooltip="Remove groups from this uniqname" id="user1Input" placeholder="Enter a user to look up">
+            </div>
+            </div>
+          <div id="queryingSignRemoveTab" class="hidden topMargin row wood-color center z-depth-2  primary-text-color wildwestfont">querying Active Directory...</div>
+          <div class="orange accent-1 white-text center" id="user1RemoveList"></div>
+        </div>
 
     </div> <!-- End of Clouds -->
 

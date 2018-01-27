@@ -1,6 +1,35 @@
 const Redux = require("redux");
 
 
+
+const removeADGroupReducer = (array=[], actions) => {
+    
+        switch(actions.type) {
+            case 'CREATE':
+            return actions.statePayload;
+            break;
+            case 'HIDE':
+            //call 
+
+            /*
+            let newArrayUndo = array.slice();
+            newArrayUndo.splice(array, 1);
+            */
+            return newState;
+            break;
+            default: return array;
+        }
+    };
+
+const removeADGroupStore = Redux.createStore(removeADGroupReducer);
+
+removeADGroupStore.subscribe( () => {
+    const myStateArray = removeADGroupStore.getState();
+    console.log(myStateArray);
+    //call DOM stuff based on last array and type
+    
+});
+
 const historyReducer = (array=[], actions) => {
 
     switch(actions.type) {
@@ -18,21 +47,22 @@ const historyReducer = (array=[], actions) => {
     }
 };
 
-
 const historyStore = Redux.createStore(historyReducer);
 
 
+/* useful for debugging
 historyStore.subscribe( () => {
     const myStateArray = historyStore.getState();
-    
+    console.log(myStateArray);
 });
+*/
 
-
-function logADGroup(uDN, gDN){
+function logADGroup(uDN, gDN, i){
     return {
         type: 'REMEMBER',
         userDN: uDN,
         groupDN: gDN,
+        i: i
     };
 }
 
@@ -42,11 +72,20 @@ function undoLastADGroup(){
     };
 }
 
+//dispatch
+module.exports.REMEMBER = (userDN, groupDN, i) => {historyStore.dispatch(logADGroup(userDN, groupDN, i));};
 
-module.exports.REMEMBER = (userDN, groupDN) => {historyStore.dispatch(logADGroup(userDN, groupDN));};
+
+// dispatch
+// UNDO() works L.I.F.O.
+// it pops the last adGroup that was removed from the history store's state array, returning the value
 module.exports.UNDO = () => {
     const myStateArray = historyStore.getState();
-    myStateArray[0].undoCount = myStateArray.length;
-    historyStore.dispatch(undoLastADGroup());
-    return myStateArray[0];
+    if(myStateArray[0]){
+        myStateArray[0].undoCount = myStateArray.length;
+        historyStore.dispatch(undoLastADGroup());
+        return myStateArray[0];
+    }else{
+        return;
+    }
 };

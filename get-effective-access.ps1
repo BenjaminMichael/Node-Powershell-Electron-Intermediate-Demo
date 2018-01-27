@@ -10,12 +10,11 @@
 
 $finalResult = (Get-EffectiveAccess $adgroupdn -Principal $me).EffectiveAccess
 $out = @()
-$out += @{Result = $finalResult}
+$out += @{  Result = $finalResult
+            bind_i = $i
+            targetGroupName = $adgroupdn
+        }
 <#
 We called the PS Script with element[i] and the results will be bound to element[bind_i]
 #>
-$out +=@{
-    bind_i = $i
-    targetGroupName = $adgroupdn
-}
 $out | ConvertTo-Json | Out-Host

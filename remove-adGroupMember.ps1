@@ -34,6 +34,7 @@ try{
                 bind_i = $i
                 groupName = $group.Split('=')[1].Split(',')[0]
                 groupDN = $group
+                userDN = $user
             }
 
 }

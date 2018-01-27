@@ -9,7 +9,7 @@
 | [array]user1sGroups
 | [array]user2sGroups (optionally)
 | [string]user1Name
-| [string]user2Name
+| [string]user2Name (optionally)
 -------------------------------   #>
 
 param (
