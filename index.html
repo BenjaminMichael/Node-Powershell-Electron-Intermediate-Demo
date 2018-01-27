@@ -8,9 +8,17 @@
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     <!--custom css controls the LED lights-->
     <link href="./css/custom.css" rel="stylesheet">
-    
-    
+    <link href="./css/wildwildwest.css" rel="stylesheet">
+
     <style>
+      @font-face {
+        font-family:'RioGrande' ;
+        src: url('./fonts/RioGrande.ttf');
+      }
+      @font-face {
+        font-family:'RioGrande Striped' ;
+        src: url('./fonts/RioGrande Striped.ttf');
+      }
       @font-face {
         font-family: 'Roboto';
         src: url("./node_modules/materialize-css/dist/fonts/roboto/Roboto-Bold.woff");
@@ -18,11 +26,24 @@
       .roboto{
         font-family:'Roboto'
       }
+      .wildwestfontStriped{
+        font-family:'RioGrande Striped';
+      }
       .overflow {
-        text-overflow:ellipsis;
+        text-overflow:auto;
+        height:45vh;
+      }
+      h1{
+        font-family: 'RioGrande';
+        font-size:3em;
+        
       }
       h4{
         font-family: 'Lato', sans-serif;
+      }
+      .customPadding{
+        margin-left:12%;
+        margin-right:12%;
       }
     li{
       margin-top:8px;
@@ -36,70 +57,164 @@
     #emptyRow{
       height:25px;
     }
-      #myWatermark{
-    position:absolute;
-    z-index:0;
-    background:white;
-    display:block;
-    min-height:50%; 
-    min-width:50%;
-    color:yellow;
-}
-
-#myWatermarkContent{
-    position:absolute;
-    z-index:1;
-}
-
-#myWatermarkText{
-    color:lightgrey;
-    font-size:120px;
-    transform:rotate(300deg);
-    -webkit-transform:rotate(300deg);
-}
 .hidden{
        display:none;
+    }
+    #queryingSign{
+min-height:20vh;
     }
 #useroutputarea{
   height:85vh;
   display:none;
 }
+#user1RemoveList{
+  margin-left:22.5vw;
+  width:50vw;
+  display:none;
+}
 #userinputarea{
   height:85vh;
 }
+.wildwestfont{
+  font-family: 'RioGrande';
+  font-size:1.7em;
+}
+.thinMargin{
+  margin-top:10px;
+}
+.cropDiv{
+  overflow:hidden;
+  height:150px;
+  margin-bottom:0;
+}
+#historyTab{
+  min-height:25vh;
+}
+.dismissChip{
+  line-height: 16px;
+}
+.undo{
+  font-size:10px;
+}
+.page-footer{
+  height:12vh;
+  width:100%;
+}
+.myTabs{
+  min-height:40vh;
+}
+#removeGroupsInputForm{
+  padding:3%;
+}
+
     </style>
   </head>
-  <body class="blue">
-    <div class="row" id="emptyRow"></div>
-    <span class="row justify-content-center top-buffer">
-        <div class="alert alert-danger red white-text" role="alert" style="display: block">
-            <strong>
-              <div id="redMessageBar"></div>
-            </strong>
-        </div>
-      </span>
+  <body><main>
 
-    
-      <div class="row white blue-text text-darken-1" id="userinputarea">
-        <div class="row"></div>
-        <div class="row">
-          <div class="col s1 m1 l1"></div>
-          <input type="text" class="col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="Compare this user">
-          <div class="col s1 m1 l1"></div>
-          <div id="btnCompare" class="col s2 m2 l2 btn-large roboto blue lighten-2 z-depth-4 mainForm">Compare</div>
-          <div class="col s1 m1 l1"></div>
-          <input class="col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions TO this uniqname" type="text" id="user2Input" placeholder="to this user"></div>
-          <div class="row"></div>
+
+    <div id="clouds">
+
+    <!-- Empty Row -->
+    <div class="row" id="emptyRow"></div>
+
+    <!-- Error messages row -->
+    <span class="row justify-content-center top-buffer">
+      <div class="alert alert-danger red white-text" role="alert" style="display: block">
+        <div class="customPadding">
+          <strong>
+            <div id="redMessageBar"></div>
+          </strong>
         </div>
-    <div class="fadeInEffect row blue white-text" id="useroutputarea">
-      <div class="col s12 m6 l6 blue white-text center" id="user1"></div>
-      
-      <div class="col s12 m6 l6 blue white-text center" id="user2"></div>
+      </div>
+    </span>
+
+    <!-- Nav Row -->
+    <div class="row customPadding" id="topNav">
+      <ul class="tabs row brown darken-3 roundCorners">
+        <li class="tab col s5">
+          <span class="coaster">
+            <span class="coaster__stitch"></span>
+            <span class="coaster__brand wildwestfont brown-text text-darken-4" id="yourNameHere"></span>
+          </span> 
+        </li>
+        <li class="tab col s2"><a class="active" href="#welcomeTab"><div class="row">Welcome</div></a></li>
+        <li class="tab col s2"><a href="#compareTab">Compare</a></li>
+        <li class="tab col s2"><a href="#removeTab">Remove</a></li>
+      </ul>
     </div>
-    
-  </body>
+
+      <!-- Just clouds -->
+      <div class="cloud x1" id="bigCloud"></div>
+      <div class="cloud x2"></div>
+
+    <!--Welcome Tab -->
+    <div id="welcomeTab" class="myTabs row woodSign dark-primary-color">
+      <div class="customPadding row">
+        <div class="col s12 m12 l12  center orange-text text-lighten-2 thinMargin"><h1>(AD Group Wrangler)</h1></div>
+        
+      </div> 
+    </div>
+
+    <!--Compare Tab -->
+      <div id="compareTab" class="myTabs row orange accent-1 verticalPadding">
+        <div class="row brown-text text-darken-1" id="userinputarea">
+              <div class="row">
+                <div class="col s1 m1 l1"></div>
+                <input type="text" class="brown-text text-darken-3 col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="Compare this user">
+                <div class="col s1 m1 l1"></div>
+                <div class="col">
+                  <div id="btnCompare" class="btnPaddingZero ready accent-color btn-floating btn-large center z-depth-4 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Compare"><i class="material-icons white-text">group</i></div>
+                </div>
+                <div class="col s1 m1 l1"></div>
+                <input type="text" class="brown-text text-darken-3 col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions TO this uniqname" id="user2Input" placeholder="to this user"></div>
+              </div>
+            <div id="queryingSign" class="hidden topMargin row wood-color center z-depth-2  primary-text-color wildwestfont">querying Active Directory...</div>
+          <div class="row white-text darken-2" id="useroutputarea">
+            <div class="col s12 m6 l6 orange accent-1 white-text center" id="user1"></div>        
+            <div class="col s12 m6 l6 orange accent-1 white-text center" id="user2"></div>
+          </div>
+      </div>
+
+      <!--Remove Tab -->
+      <div id="removeTab" class="myTabs row verticalPadding">
+        
+        <!-- hidden part --> 
+        <div class="row flow-text hidden" id="hiddenUndoBtnRow">
+          <div class="row woodSign center">
+            <div class="col s4 m4 l4"></div>
+             <div class="col center wildwestfont orange-text text-accent-2 valign-wrapper" id="remUserHeading"></div>
+          </div>
+          <div class="row">
+              <div class="col s1 m1 l1"></div>
+              <div class="col s2 m2 l2 ">
+                <div class="z-depth-3 btn-floating btn-large waves-effect waves-light purple white-text disabled" id="undoRemBtn"><i class="material-icons">undo</i></div>&nbsp;&nbsp;Undo
+               </div>
+              </div>
+        </div>
+        
+        <!--input form -->
+        <div class="row brown-text dark-primary-color center" id="removeuserinputarea">
+            <div class="col s3 m3 l3"></div>
+            <div class="col s6 m6 l6 card white z-depth-3 verticalPadding valign-wrapper" id="removeGroupsInputForm">
+                <div class="btnPaddingZero btn-floating btn-large accent-color large ready tooltipped z-depth-3" data-position="bottom" data-delay="50" data-tooltip="Click here to get a list of groups to remove." id="btnRemove"><i class="material-icons">search</i></div><input type="text" id="removeGroupsInput" class="col s9 m9 l9 tooltipped" data-position="top" data-delay="50" data-tooltip="Remove groups from this uniqname" id="user1Input" placeholder="Enter a user to look up">
+            </div>
+            </div>
+          <div id="queryingSignRemoveTab" class="hidden topMargin row wood-color center z-depth-2  primary-text-color wildwestfont">querying Active Directory...</div>
+          <div class="orange accent-1 white-text center" id="user1RemoveList"></div>
+        </div>
+
+    </div> <!-- End of Clouds -->
+
+    </main>
+
   <script>
     require('./renderer.js')
   </script>
+  </body>
+  <footer class="z-depth-4 page-footer orange accent-2">
+    <div class="row cropDiv">
+        <img src="./img/purple.svg" id="purplePattern">     
+      </div> 
+  </footer>
 </html>
  

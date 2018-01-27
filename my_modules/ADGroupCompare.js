@@ -1,120 +1,56 @@
-const { Set } = require('immutable')
-const powershell = require('node-powershell')
+const powershell = require('node-powershell');
+const ACTIONS = require('./myActions.js');
+/*
+FUNCTION: listOfGroupsToCompare
+ @param {JSON array element} names:
+ {String} u1DN distinguished name of "user 1"
+ {String} u2DN distinguished name of "user 2"
+ {String} u1Name short name of "user 1"
+ {String} u2Name short name of "user 2"
+ {String} currentUserName short name of the user running this program
 
+ Description: Updates the DOM with a list of both matching and nonmatching group memberships.
+ Then it checks User 1's nonmatching groups to see if the current user has permission to add
+ User 2 to any of the groups and it updates the DOM accordingly.
 
+PowerShell scripts:
+get-adPrincipalGroups to build 2 lists of group memberships to compare
+get-effective-access to see if you can add user 2 to any of user 1's groups
+add-adgroupmember to add user 2 to user 1's groups 1 at a time
+remove-adGroupMember to undo after a group has been added
 
-listOfGroups = function(u1DN, u2DN, u1Name, u2Name){
-        
-            let ps = new powershell({
-                executionPolicy: 'Bypass',
-                noProfile: true
-            })
-        
-            ps.addCommand(`./get-adPrincipalGroups.ps1 -user1 '${u1DN}' -user2 '${u2DN}'`)
+*/
 
-            ps.invoke()
-            .then(output => {
-            const user1and2JSONfromPS = JSON.parse(output)
-            const user1 = Set(user1and2JSONfromPS.user1sGroups)
-            const user2 = Set(user1and2JSONfromPS.user2sGroups)
-            const matchingGroups = (user1.intersect(user2))
-            const user1UniqGroups = user1.subtract(matchingGroups)
-            const user2UniqGroups = user2.subtract(matchingGroups)
-            let letUser1Output = `<ul>`
-            let adGroupDNs=[]
-            let i=0
-            user1UniqGroups.forEach((value)=>{
-                let groupName = value.split(",")
-                letUser1Output +=`
-                    <li class="white blue-text row z-depth-2 valign-wrapper">
-                        <div class="col s1 m1 l1">
-                            <div class="${i==0?`led-yellow`:`led-blue`}" id="LED-${i}"></div>
-                        </div>
-                        <div class="col s11 m11 l11 blue-text text-darken-3 roboto">
-                            ${groupName[0].slice(3)}
-                            <div class="hidden center btn-floating btn-large waves-effect waves-light right green white-text lighten-1 z-depth-2" id="copyGroupBtn${i}">
-                                <i class="close material-icons large">add</i>
-                            </div>
-                        </div>
-                    </li>
-                `
-                adGroupDNs[i]=value
-                i++
-            })
-            
-            let letUser2Output = "<ul>"
-            user2UniqGroups.forEach(function (value){
-                let groupName = value.split(",")
-                letUser2Output += `<li class="z-depth-3 tooltipped" data-position="bottom" data-delay="50" data-tooltip="This is a group ${u1Name} is not in.">${groupName[0].slice(3)}</li>`
-            })
+module.exports.listOfGroupsToCompare = (names) => {
+    let ps = new powershell({
+        executionPolicy: 'Bypass',
+        noProfile: true
+    }); 
+    ps.addCommand(`./get-adPrincipalGroups.ps1 -user1 '${names.user1DN}' -user2 '${names.user2DN}'`);
+    ps.invoke()
+    .then(output =>  {
+        ps.dispose();
+        ACTIONS.COMPARE(output, names);
+    })
+    .catch(err=>{
+        $('#redMessageBar').html(err);
+        ps.dispose();
+    });
+};
 
-            matchingGroups.forEach(function (value){
-                let groupName = value.split(",")
-                letUser1Output +=  `<li class="blue z-depth-3 tooltipped darken-2" data-position="bottom" data-delay="50" data-tooltip="This is a group both users are already in.">${groupName[0].slice(3)}</li>`
-                letUser2Output += `<li class="blue z-depth-3 tooltipped darken-2" data-position="bottom" data-delay="50" data-tooltip="This is a group both users are already in.">${groupName[0].slice(3)}</li>`
-            })
-
-            letUser1Output +='</ul>'
-            letUser2Output +='</ul>'
-
-            $('#user1').append(letUser1Output) //append HTML
-            $('#user2').append(letUser2Output) // to the DOM
-            $('#emptyRow').empty() //remove the prelaunch progressbar
-            $('#useroutputarea').slideToggle("slow", "swing")
-            $('.tooltipped').tooltip() //dynamic tooltip init
-
-            //this will be the upper limit for our literator i in a recursive function rapidfirepromise(i)
-            const max=adGroupDNs.length
-            
-            function rapidFirePromise(i){
-                var  elementID=`#LED-${i}` 
-                $(elementID).addClass("led-yellow").removeClass("led-blue")
-
-                let psChain = new powershell({
-                executionPolicy: 'Bypass',
-                noProfile: true
-                })
-            
-                psChain.addCommand(`./get-effective-access.ps1 -adgroupdn '${adGroupDNs[i]}'`)
-
-                psChain.invoke()
-                .then(output => {
-                    
-                    if(!output.includes("FullControl")){
-                    $(elementID).addClass("led-red").removeClass("led-yellow")
-                }else{
-                    $(elementID).addClass("led-green").removeClass("led-yellow")
-                    $(`#copyGroupBtn${i}`).slideToggle("slow").click(function(){
-                    //first it should warn you about adding u2Name to adGroupNames[i]
-                        let psAsync = new powershell({
-                            executionPolicy: 'Bypass',
-                            noProfile: true
-                            })
-                            
-                            psAsync.addCommand(`./add-adGroupMember.ps1 -user '${u2Name}' -group '${adGroupDNs[i]}'`)
-            
-                            psAsync.invoke()
-                            .then(output => {
-                                if(output==="Success!"){$(`#copyGroupBtn${i}`).addClass('disabled').removeClass("green")}else{$(this).addClass("amber")}
-                            })
-                        })
-                    }
-                        if (i<max-1){i++;return rapidFirePromise(i)}
-                    })
-
-//custom error handler?
-
-            .catch(err => { 
-                
-                //make LED red with a tooltip of the error text
-                $(elementID).html(`<a class="btn-large red white-text  tooltipped" data-position="bottom" data-delay="50" data-tooltip="${err}">ERROR</a>`)
-
-                ps.dispose()
-                    })        
-            } //end of rapidFirePromise
-        
-        rapidFirePromise(0)
-
-        }) //end of the main then()
-
-} //end of function
+module.exports.listOfGroupsToRemove = (names) => {
+    let ps = new powershell({
+        executionPolicy: 'Bypass',
+        noProfile: true
+    }); 
+    ps.addCommand(`./get-adPrincipalGroups.ps1 -user1 '${names.user1DN}'`);
+    ps.invoke()
+    .then(output =>  {
+        ps.dispose();
+        ACTIONS.REMOVE(output, names);
+    })
+    .catch(err=>{
+        $('#redMessageBar').html(err);
+        ps.dispose();
+    });
+};

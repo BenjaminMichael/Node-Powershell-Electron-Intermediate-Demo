@@ -1,3 +1,7 @@
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:    black;
+     opacity: .7 !important;
+}
 .container {
 	background-size: cover;
   background: rgb(226,226,226); /* Old browsers */

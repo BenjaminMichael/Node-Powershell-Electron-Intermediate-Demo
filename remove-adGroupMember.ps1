@@ -1,10 +1,10 @@
 <#-----------------------------------------------------------------------------------------------
 | params:
 | $user is the user object name
-| $group is the AD security group we want to add them to
+| $group is the AD security group we want to take them out of
 |
 | cmdlets:
-| Add-ADGroupMember
+| Remove-ADGroupMember
 |
 | returns:
 | [Array]$out which contains:
@@ -28,14 +28,13 @@ param (
     $out=@()
 
 try{
-    Add-ADGroupMember -Identity $group -Members $user
+    Remove-ADGroupMember -Identity $group -Members $user -Confirm:$false
     $out += @{
                 Result = "Success"
                 bind_i = $i
                 groupName = $group.Split('=')[1].Split(',')[0]
                 groupDN = $group
-                user = $user
-                userName = $user.Split('=')[1].Split(',')[0]
+                userDN = $user
             }
 
 }

@@ -1,0 +1,9 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 8,
+        "sourceType": "script"
+    },
+    "rules": {
+        "semi": 2
+    }
+}
