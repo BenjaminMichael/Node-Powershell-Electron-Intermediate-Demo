@@ -17,10 +17,10 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "babel-preset-es2015": "^6.24.1",
-    "electron": "^1.8.1"
+    "babel-preset-es2015": "^6.24.1"
   },
   "dependencies": {
+    "electron": "^1.7.11",
     "eslint": "^4.16.0",
     "immutable": "^3.8.2",
     "jquery": "^3.3.1",
