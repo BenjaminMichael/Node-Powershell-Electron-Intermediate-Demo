@@ -1,35 +1,5 @@
 const Redux = require("redux");
 
-
-
-const removeADGroupReducer = (array=[], actions) => {
-    
-        switch(actions.type) {
-            case 'CREATE':
-            return actions.statePayload;
-            break;
-            case 'HIDE':
-            //call 
-
-            /*
-            let newArrayUndo = array.slice();
-            newArrayUndo.splice(array, 1);
-            */
-            return newState;
-            break;
-            default: return array;
-        }
-    };
-
-const removeADGroupStore = Redux.createStore(removeADGroupReducer);
-
-removeADGroupStore.subscribe( () => {
-    const myStateArray = removeADGroupStore.getState();
-    console.log(myStateArray);
-    //call DOM stuff based on last array and type
-    
-});
-
 const historyReducer = (array=[], actions) => {
 
     switch(actions.type) {
@@ -74,7 +44,6 @@ function undoLastADGroup(){
 
 //dispatch
 module.exports.REMEMBER = (userDN, groupDN, i) => {historyStore.dispatch(logADGroup(userDN, groupDN, i));};
-
 
 // dispatch
 // UNDO() works L.I.F.O.

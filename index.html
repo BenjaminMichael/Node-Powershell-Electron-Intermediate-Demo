@@ -178,19 +178,6 @@ min-height:20vh;
       <!--Remove Tab -->
       <div id="removeTab" class="myTabs row verticalPadding">
         
-        <!-- hidden part --> 
-        <div class="row flow-text hidden" id="hiddenUndoBtnRow">
-          <div class="row woodSign center">
-            <div class="col s4 m4 l4"></div>
-             <div class="col center wildwestfont orange-text text-accent-2 valign-wrapper" id="remUserHeading"></div>
-          </div>
-          <div class="row">
-              <div class="col s1 m1 l1"></div>
-              <div class="col s2 m2 l2 ">
-                <div class="z-depth-3 btn-floating btn-large waves-effect waves-light purple white-text disabled" id="undoRemBtn"><i class="material-icons">undo</i></div>&nbsp;&nbsp;Undo
-               </div>
-              </div>
-        </div>
         
         <!--input form -->
         <div class="row brown-text dark-primary-color center" id="removeuserinputarea">
@@ -200,9 +187,24 @@ min-height:20vh;
             </div>
             </div>
           <div id="queryingSignRemoveTab" class="hidden topMargin row wood-color center z-depth-2  primary-text-color wildwestfont">querying Active Directory...</div>
-          <div class="orange accent-1 white-text center" id="user1RemoveList"></div>
+          <div class="row">
+                  <!-- hidden part --> 
+        <div class="row flow-text hidden" id="hiddenUndoBtnRow">
+          <div class="col s1 m1 l1"></div>
+            <div class="col woodSign">
+               <div class="wildwestfont orange-text text-accent-2 valign-wrapper" id="remUserHeading"></div>
+            </div>
+            <div class="col s3 m3 l3">
+                <div class="col s1 m1 l1"></div>
+                <div class="col s2 m2 l2 ">
+                  <div class="z-depth-3 btn-floating btn-large waves-effect waves-light purple white-text disabled" id="undoRemBtn"><i class="material-icons">undo</i></div>&nbsp;&nbsp;Undo
+                 </div>
+                </div>
+          </div>
+          <!-- end hidden -->
+          <div class="col s5 m5 l5 orange accent-1 white-text" id="user1RemoveList"></div>
         </div>
-
+      </div>
     </div> <!-- End of Clouds -->
 
     </main>

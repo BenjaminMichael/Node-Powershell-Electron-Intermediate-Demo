@@ -52,8 +52,9 @@ module.exports.COMPARE = (outputfromPS, names) => {
     const user1UniqGroups = user1.subtract(matchingGroups);
     const user2UniqGroups = user2.subtract(matchingGroups);
     let letUser1Output = `<ul>`;
-    let adGroupDNs=[];
-    let i=0; //we use i to count our DOM elements naming them id=LED-i, id=copyGroupBtni, and id=undoGroupBtni
+    let cu =  names.currentUser,
+    adGroupDNs=[],
+    i=0; //we use i to count our DOM elements naming them id=LED-i, id=copyGroupBtni, and id=undoGroupBtni
     //the only elements that get counted are user 1's unique group memberships.
     //this is to establish a "counting sort" of the UI elements
     //each time async code finishes it updates id=LED-i
@@ -90,40 +91,34 @@ module.exports.COMPARE = (outputfromPS, names) => {
     //If they can, it will add a green + button to the element.
 
     const max=user1UniqGroups.count();
-    function rapidFirePromise(i){
-        var  elementID=`#LED-${i}`; 
-        $(elementID).addClass("led-yellow").removeClass("led-blue");
-        let psChain = new powershell({
+    let psChain = new powershell({
         executionPolicy: 'Bypass',
         noProfile: true
         });
+    const doPowerShell = (i) => { 
+        $(`#LED-${i}`).addClass("led-yellow").removeClass("led-blue");
         psChain.addCommand(`./get-effective-access.ps1 -adgroupdn '${adGroupDNs[i]}' -me ${names.currentUser} -i ${i}`);
-        psChain.invoke()
-        .then(output => {
-            psChain.dispose();
-        const data = JSON.parse(output);                
-            if(!data.Result.includes("FullControl")){
-                $(elementID).addClass("led-red").removeClass("led-yellow");
-            }else{
-                $(elementID).addClass("led-green").removeClass("led-yellow");
-                $(`#copyGroupBtn${data.bind_i}`).slideToggle("slow").click(function(){
-                    //disable btn immediately so you cant spam it
-                    $(this).addClass('disabled').addClass('pulse').removeClass("green");
-                    _addADGroup(data.targetGroupName, names, data.bind_i);
-                });
-            }
-        if (i<max-1){i++;return rapidFirePromise(i);}
-            })
-        .catch(err => { 
-        
-        //in the case of an error in the promise, make the LED red with a tooltip of the error text
-        $(elementID).html(`<div class="btn-large red white-text tooltipped" data-position="bottom" data-delay="50" data-tooltip="${err}">ERROR</div>`);
-
-        psChain.dispose();
-            });        
-    } //end of rapidFirePromise
-
-rapidFirePromise(0);
+        psChain.invoke();
+        return;
+    };
+    psChain.on('output', output => {
+        const data = JSON.parse(output);   
+        if(!data.Result.includes("FullControl")){
+            $(`#LED-${data.bind_i}`).addClass("led-red").removeClass("led-yellow");
+        }else{
+            $(`#LED-${data.bind_i}`).addClass("led-green").removeClass("led-yellow");
+            $(`#copyGroupBtn${data.bind_i}`).slideToggle("slow").click(function(){
+                //disable btn immediately so you cant spam it
+                $(this).addClass('disabled').addClass('pulse').removeClass("green");
+                _addADGroup(data.targetGroupName, names, data.bind_i);
+            });
+        }
+        if (data.bind_i<max-1){let i = data.bind_i+1;return doPowerShell(i);}else{psChain.dispose();return;};
+        psChain.on('err', err => {
+            $('#redMessageBar').html(err);
+        });
+    });
+    if(max>0){doPowerShell(0);}else{return;};
 };
 
 
@@ -181,8 +176,11 @@ module.exports.REMOVE = (outputfromPS, names) => {
 
     const myJSON = JSON.parse(outputfromPS);
     const groupNamesList = Set(myJSON.user1sGroups);
-    let i=0;
-    let adGroupDNsToRem=[];
+    
+    
+    let i=0,
+    cu =  names.currentUser,
+    adGroupDNsToRem=[];
     var htmlOutput = `<ul class="brown lighten-3" id="remGroupUL">`;
     groupNamesList.forEach((val) => {
         //to parse the group name out of the DN use val.split(",")[0].slice(3) 
@@ -200,7 +198,7 @@ module.exports.REMOVE = (outputfromPS, names) => {
         </li>
         `;
         adGroupDNsToRem[i]=val;
-        i++; //we are using i to track the DOM elements we are creating 
+        i++;
     });
     htmlOutput+=`</ul>`;
     $('#emptyRow').empty();
@@ -208,40 +206,39 @@ module.exports.REMOVE = (outputfromPS, names) => {
     $('#user1RemoveList, #hiddenUndoBtnRow').slideToggle("slow", "swing");
     $('#queryingSignRemoveTab').slideToggle('slow');
     $('#remUserHeading').html(`<h3>(${names.user1Name})</h3>`);
+    //set the undo button click handler one time
     $('#undoRemBtn').click(() => {
         _readdGroup(Redux.UNDO());
     });
-
+    //iterate through all the groups to check effective access
     let max = adGroupDNsToRem.length;
-
-    function multiPromise(i){
-        $(`#REM-LED-${i}`).addClass("led-yellow").removeClass("led-blue");
-        let psChain = new powershell({
+    let psChain = new powershell({
         executionPolicy: 'Bypass',
         noProfile: true
         });
-        psChain.addCommand(`./get-effective-access.ps1 -adgroupdn '${adGroupDNsToRem[i]}' -me ${names.currentUser} -i ${i}`);
-        psChain.invoke()
-        .then(output => {
-        const data = JSON.parse(output);
-        psChain.dispose();
-        const  elementID=$(`#REM-LED-${data.bind_i}`);   
+    const doPowerShell = (i) => {
+        let adg = adGroupDNsToRem[i];
+        $(`#REM-LED-${i}`).addClass("led-yellow").removeClass("led-blue");
+        psChain.addCommand(`./get-effective-access.ps1 -adgroupdn '${adg}' -me ${cu} -i ${i}`);
+        psChain.invoke();
+        return;
+    };
+    psChain.on('output', output => {
+        const data = JSON.parse(output);   
         if(!data.Result.includes("FullControl")){
-            elementID.addClass("led-red").removeClass("led-yellow");
+            $(`#REM-LED-${data.bind_i}`).addClass("led-red").removeClass("led-yellow");
         }else{
-            elementID.addClass("led-green").removeClass("led-yellow");
+            $(`#REM-LED-${data.bind_i}`).addClass("led-green").removeClass("led-yellow");
             $(`#REM-ADGroupBtn${data.bind_i}`).slideToggle("slow").click(function(){
                 //disable btn immediately so you cant spam it
                 $(this).addClass('disabled pulse');
                 _remGroup(data.targetGroupName, names.user1DN, data.bind_i);
                 });
             }
-        if (i<max-1){i++;return multiPromise(i);}
-            })
-        .catch(err => { 
+        if (data.bind_i<max-1){let i = data.bind_i+1;return doPowerShell(i);}else{psChain.dispose();return;};
+        });
+        psChain.on('err', err => {
             $('#redMessageBar').html(err);
-        });        
-    } //end of multiPromise
-
-multiPromise(0);
+        });
+        if(max>0){doPowerShell(0);}else{return;};
 };
