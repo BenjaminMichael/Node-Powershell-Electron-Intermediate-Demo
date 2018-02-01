@@ -6,5 +6,5 @@ I wanted to take the PowerShell Electron concept a bit further and come up with 
 To run this demo you will need the following installed:
 node,
 Windows PowerShell,
-you need to be on a Domain joined workstation that can communicate with a Domain Controller.
+you need to be on a Domain joined workstation that can communicate with a Domain Controller, and
 you will need [Powershell Access Control Module](https://gallery.technet.microsoft.com/scriptcenter/PowerShellAccessControl-d3be7b83) to be in one of your PS modules directories.
