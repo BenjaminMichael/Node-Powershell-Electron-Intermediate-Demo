@@ -1,8 +1,10 @@
 # My learning tutorial
 ## based on [Xainey's PowerShell-Electron-Demo](https://github.com/Xainey/powershell-electron-demo)
 
-I wanted to take the example a bit further and explore a client side application that my coworker requested
+I wanted to take the PowerShell Electron concept a bit further and come up with a solution to a common problem presented by my coworker involving comparing AD groups of existing staff and new hires. (later a feature request was submitted by another colleague for the scenario where we remove AD group memberships after termination).
 
-[Powershell Access Control Module](https://gallery.technet.microsoft.com/scriptcenter/PowerShellAccessControl-d3be7b83) is a library I rely on in this example as well as a lot of assumptions that you have the PS Active Directory module available and you are on a domain similar to the one we use at my work.
-
-css/custom.css is a copy paste of the css in [this codepen for pure CSS LED lights](https://codepen.io/fskirschbaum/pen/MYJNaj).
+To run this demo you will need the following installed:
+node,
+Windows PowerShell,
+you need to be on a Domain joined workstation that can communicate with a Domain Controller, and
+you will need [Powershell Access Control Module](https://gallery.technet.microsoft.com/scriptcenter/PowerShellAccessControl-d3be7b83) to be in one of your PS modules directories.
