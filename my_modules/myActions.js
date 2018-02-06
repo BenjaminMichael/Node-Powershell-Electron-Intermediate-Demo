@@ -59,18 +59,18 @@ module.exports.COMPARE = (outputfromPS, names) => {
     //this is to establish a "counting sort" of the UI elements
     //each time async code finishes it updates id=LED-i
     user1UniqGroups.forEach((value)=>{
-        const groupName = value.split(",")[0].slice(3);
+        const groupName = value.dn.split(",")[0].slice(3);
         letUser1Output += DOM.compare_parseUser1Unique(i, groupName);
-        adGroupDNs[i]=value; //sets are great for doing the intersect and subtract methods but now that we've done that we really need the values to be indexed like an array
+        adGroupDNs[i]=value.dn; //sets are great for doing the intersect and subtract methods but now that we've done that we really need the values to be indexed like an array
         i++;
     });
     let letUser2Output = `<ul class="listFont">`;
     user2UniqGroups.forEach(function (value){
-        const groupName = value.split(",")[0].slice(3);
+        const groupName = value.dn.split(",")[0].slice(3);
         letUser2Output += DOM.compare_parseUser2Unique(names.u1Name, groupName);
     });
     matchingGroups.forEach(function (value){
-        const groupName = value.split(",")[0].slice(3);
+        const groupName = value.dn.split(",")[0].slice(3);
         const temp = DOM.compare_parseMatching(groupName);
         letUser1Output += temp;
         letUser2Output += temp;
@@ -125,10 +125,7 @@ module.exports.COMPARE = (outputfromPS, names) => {
 module.exports.REMOVE = (outputfromPS, names) => {
 
     const _readdGroup = (reduxStoreOutput) => {
-        const {userDN, groupDN, undoCount, i} = reduxStoreOutput;
-        if(undoCount===1){
-            $('#undoRemBtn').addClass('disabled');
-        };
+        const {userDN, groupDN, i} = reduxStoreOutput;
         let psReadd = new powershell({
             executionPolicy: 'Bypass',
             noProfile: true
@@ -162,7 +159,7 @@ module.exports.REMOVE = (outputfromPS, names) => {
                 const data = JSON.parse(output);
                 if(data[0].Result==="Success"){
                     $(`#REM-Row-${data[0].bind_i}`).slideToggle('slow');
-                    Redux.REMEMBER(data[0].userDN, data[0].groupDN, data[0].bind_i);
+                    Redux.REMEMBER(data[0].bind_i);
                     $('#undoRemBtn').removeClass('disabled');
                 }else{
                     $('#redMessageBar').html(data[1]);
@@ -174,9 +171,9 @@ module.exports.REMOVE = (outputfromPS, names) => {
         };
 
 
-    const myJSON = JSON.parse(outputfromPS);
-    const groupNamesList = Set(myJSON.user1sGroups);
-    
+
+     const myJSON = JSON.parse(outputfromPS);
+     const groupNamesList =  Redux.CREATE(outputfromPS, names.currentUser);
     
     let i=0,
     cu =  names.currentUser,
@@ -190,14 +187,14 @@ module.exports.REMOVE = (outputfromPS, names) => {
             <div class="${i===0?`led-yellow`:`led-blue`}" id="REM-LED-${i}"></div>
         </div>
         <div class="col s11 m11 l11 brown-text text-darken-3 roboto">
-        ${val.split(",")[0].slice(3)}
+        ${val.dn.split(",")[0].slice(3)}
             <div class="hidden center btn-floating btn-large waves-effect waves-light right green white-text lighten-1 z-depth-2" id="REM-ADGroupBtn${i}">
                 <i class="close material-icons large">remove</i>
             </div>
         </div>
         </li>
         `;
-        adGroupDNsToRem[i]=val;
+        adGroupDNsToRem[i]=val.dn;
         i++;
     });
     htmlOutput+=`</ul>`;
@@ -206,10 +203,17 @@ module.exports.REMOVE = (outputfromPS, names) => {
     $('#user1RemoveList, #hiddenUndoBtnRow').slideToggle("slow", "swing");
     $('#queryingSignRemoveTab').slideToggle('slow');
     $('#remUserHeading').html(`<h3>(${names.user1Name})</h3>`);
-    //set the undo button click handler one time
+    //set the button click handlers one time
     $('#undoRemBtn').click(() => {
-        _readdGroup(Redux.UNDO());
+        $('#undoRemBtn').addClass('pulse');
+        _readdGroup(Redux.UNDO());//call UNDO before the group is removed because from the user perspective it changes at the time of clicking
     });
+    $('#reportRemBtn').click(() => {
+        Redux.REPORT();
+    });
+
+
+
     //iterate through all the groups to check effective access
     let max = adGroupDNsToRem.length;
     let psChain = new powershell({

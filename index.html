@@ -106,7 +106,15 @@ min-height:20vh;
 #removeGroupsInputForm{
   padding:3%;
 }
-
+#removeGroupsInput{
+  font-size:2em;
+}
+#user1Input{
+  font-size:1.25em;
+}
+#user2Input{
+  font-size:1.2em;
+}
     </style>
   </head>
   <body><main>
@@ -158,7 +166,7 @@ min-height:20vh;
     <!--Compare Tab -->
       <div id="compareTab" class="myTabs row orange accent-1 verticalPadding">
         <div class="row brown-text text-darken-1" id="userinputarea">
-              <div class="row">
+              <div class="row center  ">
                 <div class="col s1 m1 l1"></div>
                 <input type="text" class="brown-text text-darken-3 col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="Compare this user">
                 <div class="col s1 m1 l1"></div>
@@ -177,8 +185,6 @@ min-height:20vh;
 
       <!--Remove Tab -->
       <div id="removeTab" class="myTabs row verticalPadding">
-        
-        
         <!--input form -->
         <div class="row brown-text dark-primary-color center" id="removeuserinputarea">
             <div class="col s3 m3 l3"></div>
@@ -191,14 +197,18 @@ min-height:20vh;
                   <!-- hidden part --> 
         <div class="row flow-text hidden" id="hiddenUndoBtnRow">
           <div class="col s1 m1 l1"></div>
-            <div class="col woodSign">
+            <div class="col s6 m6 l6 woodSign center">
                <div class="wildwestfont orange-text text-accent-2 valign-wrapper" id="remUserHeading"></div>
             </div>
-            <div class="col s3 m3 l3">
+            <div class="col s2 m2 l2">
                 <div class="col s1 m1 l1"></div>
-                <div class="col s2 m2 l2 ">
+                <div class="col s4 m4 l4">
                   <div class="z-depth-3 btn-floating btn-large waves-effect waves-light purple white-text disabled" id="undoRemBtn"><i class="material-icons">undo</i></div>&nbsp;&nbsp;Undo
                  </div>
+                 <div class="col s1 m1 l1"></div>
+                 <div class="col s2 m2 l2">
+                   <div class="z-depth-3 btn-floating btn-large waves-effect waves-light purple white-text" id="reportRemBtn"><i class="material-icons">undo</i></div>&nbsp;&nbsp;Report
+                  </div>  
                 </div>
           </div>
           <!-- end hidden -->
