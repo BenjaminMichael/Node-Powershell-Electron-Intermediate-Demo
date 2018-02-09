@@ -36,8 +36,7 @@ module.exports.compare_addADGroup_success = (data =>{
             </div>
         </li>
         </ul>
-        `);  
-        $('#historyTabList').append(`<li> Added ${data[0].userName} to ${data[0].groupDN} </li>`);
+        `);
     });
 
 module.exports.compare_addADGroup_error = (data =>{

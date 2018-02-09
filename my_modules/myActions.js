@@ -3,9 +3,11 @@ const { Set } = require('immutable');
 const Redux = require('./store.js');
 const DOM = require('./DOMmanipulation.js');
 
+var Queue = require('better-queue');
+
 module.exports.COMPARE = (outputfromPS, names) => {
 
-    const _removeADGroup = (groupDN, user2, i) => {
+    const _removeADGroup = (groupDN, user2, i, cb) => {
         let psxAsync = new powershell({
             executionPolicy: 'Bypass',
             noProfile: true
@@ -15,13 +17,15 @@ module.exports.COMPARE = (outputfromPS, names) => {
             .then(output => {
                 psxAsync.dispose();
                 DOM.compare_removeADGroup(output);
+                cb(null, null);
             })
             .catch(err => { 
                     psxAsync.dispose();
+                    cb(null, null);
                 });          
     };
 
-    const _addADGroup = (targetGroupName, names, i) => { 
+    const _addADGroup = (targetGroupName, names, i, cb) => { 
         let psAsync = new powershell({
             executionPolicy: 'Bypass',
             noProfile: true
@@ -35,15 +39,33 @@ module.exports.COMPARE = (outputfromPS, names) => {
                 DOM.compare_addADGroup_success(data);
                 let myUndoBtn = $(`#undoGroupBtn${data[0].bind_i}`);
                 myUndoBtn.click(() => {
-                    myUndoBtn.addClass('pulse').addClass('disabled');
-                    _removeADGroup(data[0].groupDN, data[0].userName, data[0].bind_i);
+                    myUndoBtn.addClass('pulse disabled');
+                    const myObj = {type: 'remove', groupDN: data[0].groupDN, user2: data[0].userName, i: data[0].bind_i};
+                    addRemoveADGroupQueue.push(myObj);
                 });
-            }else{DOM.compare_addADGroup_error(data);}
+            }else{
+                DOM.compare_addADGroup_error(data);
+            }
+            cb(null, null);
         })
         .catch(err => { 
                 psAsync.dispose();
+                cb(null, null);
         });
     };
+
+    addRemoveADGroupQueue = new Queue(function (input, cb) {
+            switch(input.type){
+                case 'remove':
+                _removeADGroup(input.groupDN, input.user2, input.i, cb);
+                break;
+                case 'add':
+                _addADGroup(input.targetGroupName, input.names, input.i, cb);
+                break;
+            }
+        });
+
+
 
     const user1and2JSONfromPS = JSON.parse(outputfromPS);
     const user1 = Set(user1and2JSONfromPS.user1sGroups);
@@ -109,8 +131,9 @@ module.exports.COMPARE = (outputfromPS, names) => {
             $(`#LED-${data.bind_i}`).addClass("led-green").removeClass("led-yellow");
             $(`#copyGroupBtn${data.bind_i}`).slideToggle("slow").click(function(){
                 //disable btn immediately so you cant spam it
-                $(this).addClass('disabled').addClass('pulse').removeClass("green");
-                _addADGroup(data.targetGroupName, names, data.bind_i);
+                $(this).addClass('disabled pulse').removeClass("green");
+                const myObj = {type: 'add', targetGroupName : data.targetGroupName, names: names, i: data.bind_i};
+                addRemoveADGroupQueue.push(myObj);
             });
         }
         if (data.bind_i<max-1){let i = data.bind_i+1;return doPowerShell(i);}else{psChain.dispose();return;};
@@ -124,30 +147,33 @@ module.exports.COMPARE = (outputfromPS, names) => {
 
 module.exports.REMOVE = (outputfromPS, names) => {
 
-    const _readdGroup = (reduxStoreOutput) => {
-        const {userDN, groupDN, i} = reduxStoreOutput;
+    const _readdGroup = (reduxStoreOutput, cb) => {
+        const {groupDN, i} = reduxStoreOutput;
         let psReadd = new powershell({
             executionPolicy: 'Bypass',
             noProfile: true
             });
-            psReadd.addCommand(`./add-adGroupMember.ps1 -user '${userDN}' -group '${groupDN}' -i ${i}`); //i doesnt matter
+            psReadd.addCommand(`./add-adGroupMember.ps1 -user '${names.user1DN}' -group '${groupDN.dn}' -i ${i}`); //i doesnt matter
             psReadd.invoke()
             .then(output => {
                 psReadd.dispose();
                 const data = JSON.parse(output);
                 if(data[0].Result==="Success"){
                     DOM.remove_readd(data);
+                    cb(null, null);
                 }else{
                     $('#redMessageBar').html(data[1]);
+                    cb(null, null);
                 }   
             })
             .catch((err) => {
-                console.log(err);
+                cb(null, null);
+                psReadd.dispose();
             });
             
         };
 
-    const _remGroup = (groupDN, userDN, i) => {
+    const _remGroup = (groupDN, userDN, i, cb) => {
         let psRem = new powershell({
             executionPolicy: 'Bypass',
             noProfile: true
@@ -160,20 +186,31 @@ module.exports.REMOVE = (outputfromPS, names) => {
                 if(data[0].Result==="Success"){
                     $(`#REM-Row-${data[0].bind_i}`).slideToggle('slow');
                     Redux.REMEMBER(data[0].bind_i);
-                    $('#undoRemBtn').removeClass('disabled');
+                    cb(null, null);
                 }else{
                     $('#redMessageBar').html(data[1]);
+                    cb(null, null);
                 }
             })
             .catch(err => {
+                psRem.dispose()
                 console.log(err);
+                cb(null, null);
             });
         };
 
+        var remGroupQueue = new Queue(function (input, cb) {
+          const {groupDN, userDN, i} = input;
+          _remGroup(groupDN, userDN, i, cb);
+        });
+
+        var readdGroupQueue = new Queue(function (input, cb) {
+            _readdGroup(input, cb);
+          });
 
 
      const myJSON = JSON.parse(outputfromPS);
-     const groupNamesList =  Redux.CREATE(outputfromPS, names.currentUser);
+     const groupNamesList =  Redux.CREATE(outputfromPS, names.user1Name, names.currentUser);
     
     let i=0,
     cu =  names.currentUser,
@@ -205,11 +242,13 @@ module.exports.REMOVE = (outputfromPS, names) => {
     $('#remUserHeading').html(`<h3>(${names.user1Name})</h3>`);
     //set the button click handlers one time
     $('#undoRemBtn').click(() => {
-        $('#undoRemBtn').addClass('pulse');
-        _readdGroup(Redux.UNDO());//call UNDO before the group is removed because from the user perspective it changes at the time of clicking
+        $('#undoRemBtn').addClass('pulse disabled');
+        readdGroupQueue.push(Redux.UNDO());
+        
     });
     $('#reportRemBtn').click(() => {
         Redux.REPORT();
+        //trigger modal
     });
 
 
@@ -236,7 +275,8 @@ module.exports.REMOVE = (outputfromPS, names) => {
             $(`#REM-ADGroupBtn${data.bind_i}`).slideToggle("slow").click(function(){
                 //disable btn immediately so you cant spam it
                 $(this).addClass('disabled pulse');
-                _remGroup(data.targetGroupName, names.user1DN, data.bind_i);
+                const myObj = {groupDN: data.targetGroupName, userDN: names.user1DN, i: data.bind_i};
+                remGroupQueue.push(myObj);
                 });
             }
         if (data.bind_i<max-1){let i = data.bind_i+1;return doPowerShell(i);}else{psChain.dispose();return;};

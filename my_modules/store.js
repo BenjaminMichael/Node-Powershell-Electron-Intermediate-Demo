@@ -12,20 +12,20 @@ const Redux = require('redux');
 const historyReducer = (state={}, actions) => {
 switch(actions.type) {
     case 'REMEMBER':
-    const newUndoHistory = state.undoHistory.push(state.adGroupsToRemove.get(actions.bind_i));
-    const newADGroupList = state.adGroupsToRemove.update(actions.bind_i, function(){return {dn: state.adGroupsToRemove.get(actions.bind_i).dn, removed:true};});
+    const newUndoHistory = state.undoHistory.push({dn: state.adGroupsToRemove.get(actions.bind_i), undo_i: actions.bind_i});
+    const newADGroupList = state.adGroupsToRemove.update(actions.bind_i, () => state.adGroupsToRemove.get(actions.bind_i).dn);
     return {
-        adGroupsToRemove: newADGroupList,
+        adGroupsToRemove: state.adGroupsToRemove,
         undoHistory: newUndoHistory,
         currentUser: state.currentUser
     };
     break;
     case 'UNDO':
-    const {bind_i, dn} = state.undoHistory.first();
+    const {undo_i, dn} = state.undoHistory.first();
     const postUndoHistory = state.undoHistory.shift();
-    const postUndoADGroupList = state.adGroupsToRemove.update(bind_i, () => dn);
+    //const postUndoADGroupList = state.adGroupsToRemove.update(undo_i, () => dn);
     return {
-        adGroupsToRemove: postUndoADGroupList,
+        adGroupsToRemove: state.adGroupsToRemove,
         undoHistory: postUndoHistory,
         currentUser: state.currentUser
     };
@@ -33,7 +33,7 @@ switch(actions.type) {
     default: return state;
 }
 };
-module.exports.CREATE = (adGroupDNsToRem, currentUser) => {
+module.exports.CREATE = (adGroupDNsToRem, user1Name, currentUser) => {
     function rememberADGroup(bind_i){
         return {
             type: 'REMEMBER',
@@ -50,7 +50,8 @@ module.exports.CREATE = (adGroupDNsToRem, currentUser) => {
     const initialState = {
         adGroupsToRemove: initialGroupsToRemove,
         undoHistory: List(),
-        currentUser
+        currentUser,
+        user1Name
     };
     const store = Redux.createStore(historyReducer, initialState);
     module.exports.REMEMBER = (i) => {store.dispatch(rememberADGroup(i));};
@@ -61,15 +62,19 @@ module.exports.CREATE = (adGroupDNsToRem, currentUser) => {
     };
     module.exports.UNDO = () => {
         const myUndoState = store.getState();
-        const {undo_bind_i, undo_dn} = myUndoState.undoHistory.first();
+        const myFirstInQueue = myUndoState.undoHistory.first();
         store.dispatch(undoLastADGroup());
-        return {userDN: myUndoState.user1Name, groupDN: undo_dn, i: undo_bind_i};
+        return {groupDN: myFirstInQueue.dn, i: myFirstInQueue.undo_i};
     };
-    /* useful for debugging
+    
     store.subscribe( () => {
-        const myState = store.getState();
-        console.log(myState.undoHistory.count());
-        });
-        */
+        const myCurrentState = store.getState();
+        if (myCurrentState.undoHistory.count()>0){
+            $('#undoRemBtn').removeClass('disabled');
+        }else{
+            $('#undoRemBtn').addClass('disabled');
+        }
+    });
+        
     return data.user1sGroups;
 };

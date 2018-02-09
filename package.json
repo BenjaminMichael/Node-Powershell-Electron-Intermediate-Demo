@@ -20,6 +20,7 @@
     "babel-preset-es2015": "^6.24.1"
   },
   "dependencies": {
+    "better-queue": "^3.8.6",
     "electron": "^1.7.11",
     "eslint": "^4.16.0",
     "immutable": "^3.8.2",
