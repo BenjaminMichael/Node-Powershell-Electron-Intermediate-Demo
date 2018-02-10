@@ -146,8 +146,8 @@ min-height:20vh;
           </span> 
         </li>
         <li class="tab col s2"><a class="active" href="#welcomeTab"><div class="row">Welcome</div></a></li>
-        <li class="tab col s2"><a href="#compareTab">Compare</a></li>
-        <li class="tab col s2"><a href="#removeTab">Remove</a></li>
+        <li class="tab col s2" id="compareTabButton"><a href="#compareTab">Compare</a></li>
+        <li class="tab col s2" id="removeTabButton"><a href="#removeTab">Remove</a></li>
       </ul>
     </div>
 
@@ -171,7 +171,7 @@ min-height:20vh;
                 <input type="text" class="brown-text text-darken-3 col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="Compare this user">
                 <div class="col s1 m1 l1"></div>
                 <div class="col">
-                  <div id="btnCompare" class="btnPaddingZero ready accent-color btn-floating btn-large center z-depth-4 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Compare"><i class="material-icons white-text">group</i></div>
+                  <div id="btnCompare" class="btnPaddingZero accent-color btn-floating btn-large center z-depth-4 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Compare"><i class="material-icons white-text">group</i></div>
                 </div>
                 <div class="col s1 m1 l1"></div>
                 <input type="text" class="brown-text text-darken-3 col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions TO this uniqname" id="user2Input" placeholder="to this user"></div>
@@ -189,7 +189,7 @@ min-height:20vh;
         <div class="row brown-text dark-primary-color center" id="removeuserinputarea">
             <div class="col s3 m3 l3"></div>
             <div class="col s6 m6 l6 card white z-depth-3 verticalPadding valign-wrapper" id="removeGroupsInputForm">
-                <div class="btnPaddingZero btn-floating btn-large accent-color large ready tooltipped z-depth-3" data-position="bottom" data-delay="50" data-tooltip="Click here to get a list of groups to remove." id="btnRemove"><i class="material-icons">search</i></div><input type="text" id="removeGroupsInput" class="col s9 m9 l9 tooltipped" data-position="top" data-delay="50" data-tooltip="Remove groups from this uniqname" id="user1Input" placeholder="Enter a user to look up">
+                <div class="btnPaddingZero btn-floating btn-large accent-color large tooltipped z-depth-3" data-position="bottom" data-delay="50" data-tooltip="Click here to get a list of groups to remove." id="btnRemove"><i class="material-icons">search</i></div><input type="text" id="removeGroupsInput" class="col s9 m9 l9 tooltipped" data-position="top" data-delay="50" data-tooltip="Remove groups from this uniqname" id="user1Input" placeholder="Enter a user to look up">
             </div>
             </div>
           <div id="queryingSignRemoveTab" class="hidden topMargin row wood-color center z-depth-2  primary-text-color wildwestfont">querying Active Directory...</div>

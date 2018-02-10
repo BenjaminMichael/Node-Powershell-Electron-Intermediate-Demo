@@ -54,12 +54,10 @@ module.exports.CREATE = (adGroupDNsToRem, user1Name, currentUser) => {
         user1Name
     };
     const store = Redux.createStore(historyReducer, initialState);
+    
     module.exports.REMEMBER = (i) => {store.dispatch(rememberADGroup(i));};
-    module.exports.REPORT = () => {
-        const myReportState = store.getState();
-        console.log('do this in a modal:');
-        console.log(myReportState);
-    };
+    
+    
     module.exports.UNDO = () => {
         const myUndoState = store.getState();
         const myFirstInQueue = myUndoState.undoHistory.first();
@@ -68,7 +66,7 @@ module.exports.CREATE = (adGroupDNsToRem, user1Name, currentUser) => {
     };
     
     store.subscribe( () => {
-        const myCurrentState = store.getState();
+        const myCurrentState = store.getState(); //put this in the modal AUTO-REPORT
         if (myCurrentState.undoHistory.count()>0){
             $('#undoRemBtn').removeClass('disabled');
         }else{
