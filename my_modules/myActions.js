@@ -8,20 +8,20 @@ module.exports.COMPARE = (outputfromPS, names) => {
 
     const _removeADGroup = (groupDN, user2, i, cb) => {
         let psxAsync = new powershell({
-            executionPolicy: 'Bypass',
-            noProfile: true
-            });
-            psxAsync.addCommand(`./remove-adGroupMember.ps1 -user '${user2}' -group '${groupDN}' -i ${i}`);
-            psxAsync.invoke()
-            .then(output => {
-                psxAsync.dispose();
-                DOM.compare_removeADGroup(output);
-                cb(null, null);
-            })
-            .catch(err => { 
-                    psxAsync.dispose();
-                    cb(null, null);
-                });          
+        executionPolicy: 'Bypass',
+        noProfile: true
+        });
+        psxAsync.addCommand(`./remove-adGroupMember.ps1 -user '${user2}' -group '${groupDN}' -i ${i}`);
+        psxAsync.invoke()
+        .then(output => {
+            psxAsync.dispose();
+            DOM.compare_removeADGroup(output);
+            cb(null, null);
+        })
+        .catch(err => { 
+            psxAsync.dispose();
+            cb(null, null);
+            });          
     };
 
     const _addADGroup = (targetGroupName, names, i, cb) => { 
@@ -36,11 +36,9 @@ module.exports.COMPARE = (outputfromPS, names) => {
             const data = JSON.parse(output);
             if(data[0].Result==="Success"){
                 DOM.compare_addADGroup_success(data);
-                let myUndoBtn = $(`#undoGroupBtn${data[0].bind_i}`);
-                myUndoBtn.click(() => {
-                    myUndoBtn.addClass('pulse disabled');
-                    const myObj = {type: 'remove', groupDN: data[0].groupDN, user2: data[0].userName, i: data[0].bind_i};
-                    addRemoveADGroupQueue.push(myObj);
+                $(`#undoGroupBtn${data[0].bind_i}`).click(function(){
+                    $(this).addClass('pulse disabled');
+                    addRemoveADGroupQueue.push({type: 'remove', groupDN: data[0].groupDN, user2: data[0].userName, i: data[0].bind_i});
                 });
             }else{
                 DOM.compare_addADGroup_error(data);
@@ -113,8 +111,7 @@ module.exports.COMPARE = (outputfromPS, names) => {
             $(`#copyGroupBtn${data.bind_i}`).slideToggle("slow").click(function(){
                 //disable btn immediately so you cant spam it
                 $(this).addClass('disabled pulse').removeClass("green");
-                const myObj = {type: 'add', targetGroupName : data.targetGroupName, names: names, i: data.bind_i};
-                addRemoveADGroupQueue.push(myObj);
+                addRemoveADGroupQueue.push({type: 'add', targetGroupName : data.targetGroupName, names: names, i: data.bind_i});
             });
         }
         if (data.bind_i<max-1){let i = data.bind_i+1;return doPowerShell(i);}else{psChain.dispose();return;};
@@ -153,7 +150,6 @@ module.exports.REMOVE = (outputfromPS, names) => {
                 cb(null, null);
                 psReadd.dispose();
             });
-            
         };
 
     const _remGroup = (groupDN, userDN, i, cb) => {
@@ -182,22 +178,23 @@ module.exports.REMOVE = (outputfromPS, names) => {
         });
     };
 
-        var remGroupQueue = new Queue(function (input, cb) {
-          const {groupDN, userDN, i} = input;
-          _remGroup(groupDN, userDN, i, cb);
-        });
-
-        var readdGroupQueue = new Queue(function (input, cb) {
+    var readdOrRemoveADGroupQueue = new Queue(function (input, cb) {
+        switch(input.type){
+            case 'remove':
+            _remGroup(input.groupDN, input.userDN, input.i, cb);
+            break;
+            case 'readd':
             _readdGroup(input, cb);
-          });
-    
+            break;
+        }
+    });
+
     const groupNamesList =  Redux.CREATE(outputfromPS, names.user1Name, names.currentUser);
-    DOM.remove_parseListOfGroups(groupNamesList, names.user1name);
+    DOM.remove_parseListOfGroups(groupNamesList, names.user1Name);
     
     $('#undoRemBtn').click(() => {
         $('#undoRemBtn').addClass('pulse disabled');
-        readdGroupQueue.push(Redux.UNDO());
-        
+        readdOrRemoveADGroupQueue.push(Redux.UNDO());
     });
 
     $('#reportRemBtn').click(() => {
@@ -210,7 +207,7 @@ module.exports.REMOVE = (outputfromPS, names) => {
     let psChain = new powershell({
         executionPolicy: 'Bypass',
         noProfile: true
-        });
+    });
     const doPowerShell = (i) => {
         $(`#REM-LED-${i}`).addClass("led-yellow").removeClass("led-blue");
         psChain.addCommand(`./get-effective-access.ps1 -adgroupdn '${groupNamesList[i].dn}' -me ${names.currentUser} -i ${i}`);
@@ -226,14 +223,13 @@ module.exports.REMOVE = (outputfromPS, names) => {
             $(`#REM-ADGroupBtn${data.bind_i}`).slideToggle("slow").click(function(){
                 //disable btn immediately so you cant spam it
                 $(this).addClass('disabled pulse');
-                const myObj = {groupDN: data.targetGroupName, userDN: names.user1DN, i: data.bind_i};
-                remGroupQueue.push(myObj);
-                });
-            }
+                readdOrRemoveADGroupQueue.push({type: 'remove', groupDN: data.targetGroupName, userDN: names.user1DN, i: data.bind_i});
+            });
+        }
         if (data.bind_i<max-1){let i = data.bind_i+1;return doPowerShell(i);}else{psChain.dispose();return;};
-        });
-        psChain.on('err', err => {
-            $('#redMessageBar').html(err);
-        });
-        if(max>0){doPowerShell(0);}else{return;};
+    });
+    psChain.on('err', err => {
+        $('#redMessageBar').html(err);
+    });
+    if(max>0){doPowerShell(0);}else{return;};
 };

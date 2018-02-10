@@ -62,7 +62,7 @@ module.exports.CREATE = (adGroupDNsToRem, user1Name, currentUser) => {
         const myUndoState = store.getState();
         const myFirstInQueue = myUndoState.undoHistory.first();
         store.dispatch(undoLastADGroup());
-        return {groupDN: myFirstInQueue.dn, i: myFirstInQueue.undo_i};
+        return {type: 'readd', groupDN: myFirstInQueue.dn, i: myFirstInQueue.undo_i};
     };
     
     store.subscribe( () => {

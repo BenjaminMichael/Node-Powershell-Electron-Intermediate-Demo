@@ -13,6 +13,8 @@
 //design modal and wire it up to data store for reporting
 //
 //make welcome tab more informative
+//
+// cache icons and any other web assets locally
 
 //renderer.js
 

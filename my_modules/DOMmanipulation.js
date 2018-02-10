@@ -91,7 +91,7 @@ module.exports.remove_parseListOfGroups = ((groupNamesList, user1name) => {
     $('#user1RemoveList').append(htmlOutput);
     $('#user1RemoveList, #hiddenUndoBtnRow').slideToggle("slow", "swing");
     $('#queryingSignRemoveTab').slideToggle('slow');
-    $('#remUserHeading').html(`<h3>(${user1Name})</h3>`);
+    $('#remUserHeading').html(`<h3>(${user1name})</h3>`);
 });
 
 module.exports.remove_readd = ((data) => {
