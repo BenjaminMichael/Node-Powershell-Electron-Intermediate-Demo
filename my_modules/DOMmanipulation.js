@@ -1,6 +1,3 @@
-
-
-//the parse functions dont actually manipulate the DOM they just build the HTML
 module.exports.compare_parseMatching = (groupName => {
 return `<li class="brown z-depth-3 tooltipped darken-4" data-position="bottom" data-delay="50" data-tooltip="This is a group both users are already in.">${groupName}</li>`;
 });
@@ -77,7 +74,7 @@ module.exports.remove_parseListOfGroups = ((groupNamesList, user1name) => {
         <div class="col s1 m1 l1">
             <div class="${index==0?`led-yellow`:`led-blue`}" id="REM-LED-${index}"></div>
         </div>
-        <div class="col s11 m11 l11 brown-text text-darken-3 roboto">
+        <div class="col s11 m11 l11 black-text">
         ${val.dn.split(",")[0].slice(3)}
             <div class="hidden center btn-floating btn-large waves-effect waves-light right green white-text lighten-1 z-depth-2" id="REM-ADGroupBtn${index}">
                 <i class="close material-icons large">remove</i>
@@ -91,7 +88,7 @@ module.exports.remove_parseListOfGroups = ((groupNamesList, user1name) => {
     $('#user1RemoveList').append(htmlOutput);
     $('#user1RemoveList, #hiddenUndoBtnRow').slideToggle("slow", "swing");
     $('#queryingSignRemoveTab').slideToggle('slow');
-    $('#remUserHeading').html(`<h3>(${user1name})</h3>`);
+    $('#remUserHeading').html(`<h4>${user1name}</h4>`);
 });
 
 module.exports.remove_readd = ((data) => {

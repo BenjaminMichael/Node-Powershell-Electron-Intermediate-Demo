@@ -197,11 +197,6 @@ module.exports.REMOVE = (outputfromPS, names) => {
         readdOrRemoveADGroupQueue.push(Redux.UNDO());
     });
 
-    $('#reportRemBtn').click(() => {
-        Redux.REPORT();
-        //trigger modal
-    });
-
     //iterate through all the groups to check effective access
     let max = groupNamesList.length;
     let psChain = new powershell({
@@ -217,8 +212,10 @@ module.exports.REMOVE = (outputfromPS, names) => {
     psChain.on('output', output => {
         const data = JSON.parse(output);   
         if(!data.Result.includes("FullControl")){
+            Redux.UPDATE(data.bind_i, false);
             $(`#REM-LED-${data.bind_i}`).addClass("led-red").removeClass("led-yellow");
         }else{
+            Redux.UPDATE(data.bind_i, true);
             $(`#REM-LED-${data.bind_i}`).addClass("led-green").removeClass("led-yellow");
             $(`#REM-ADGroupBtn${data.bind_i}`).slideToggle("slow").click(function(){
                 //disable btn immediately so you cant spam it

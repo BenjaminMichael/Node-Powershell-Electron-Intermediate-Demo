@@ -11,14 +11,31 @@ const Redux = require('redux');
 
 const historyReducer = (state={}, actions) => {
 switch(actions.type) {
+    case 'UPDATE':
+    //this needs to set fullControl to True or False
+    const newADGroupsToRemove = state.adGroupsToRemove.update(actions.bind_i, val => {
+        const updatedListEntry = {
+            dn: val.dn,
+            removed: val.removed,
+            fullControl: actions.fullControl
+        };
+        return updatedListEntry;
+    });
+    return {
+        adGroupsToRemove: newADGroupsToRemove,
+        undoHistory: state.undoHistory,
+        currentUser: state.CurrentUser
+    };
+    break;
     case 'REMEMBER':
     const newUndoHistory = state.undoHistory.push({dn: state.adGroupsToRemove.get(actions.bind_i), undo_i: actions.bind_i});
+    //this needs to set Removed to True
     const newADGroupList = state.adGroupsToRemove.update(actions.bind_i, () => state.adGroupsToRemove.get(actions.bind_i).dn);
-    return {
-        adGroupsToRemove: state.adGroupsToRemove,
-        undoHistory: newUndoHistory,
-        currentUser: state.currentUser
-    };
+        return {
+            adGroupsToRemove: state.adGroupsToRemove,
+            undoHistory: newUndoHistory,
+            currentUser: state.currentUser
+        };
     break;
     case 'UNDO':
     const {undo_i, dn} = state.undoHistory.first();
@@ -45,6 +62,13 @@ module.exports.CREATE = (adGroupDNsToRem, user1Name, currentUser) => {
             type: 'UNDO'
         };
     }
+    function updateADGroup(bind_i, fullControl){
+        return {
+            type: 'UPDATE',
+            bind_i: bind_i,
+            fullControl: fullControl
+        };
+    }
     data = JSON.parse(adGroupDNsToRem);
     const initialGroupsToRemove = List(data.user1sGroups);
     const initialState = {
@@ -54,9 +78,7 @@ module.exports.CREATE = (adGroupDNsToRem, user1Name, currentUser) => {
         user1Name
     };
     const store = Redux.createStore(historyReducer, initialState);
-    
     module.exports.REMEMBER = (i) => {store.dispatch(rememberADGroup(i));};
-    
     
     module.exports.UNDO = () => {
         const myUndoState = store.getState();
@@ -65,14 +87,41 @@ module.exports.CREATE = (adGroupDNsToRem, user1Name, currentUser) => {
         return {type: 'readd', groupDN: myFirstInQueue.dn, i: myFirstInQueue.undo_i};
     };
     
+    module.exports.UPDATE = (bind_i, fullControl) => {store.dispatch(updateADGroup(bind_i, fullControl));};
+
     store.subscribe( () => {
-        const myCurrentState = store.getState(); //put this in the modal AUTO-REPORT
+        const myCurrentState = store.getState();
+        const myElement = $('#remove_reporting_body');
+        myElement.empty();
+        let myFullControlGroups, myCantEditGroups, myUnknownGroups = "";
+        const listOfFullControlGroups = myCurrentState.adGroupsToRemove.filter(function(obj){return obj.fullControl == true;});
+        listOfFullControlGroups.forEach((obj) => {
+            myFullControlGroups += `<li>${(JSON.stringify(obj.dn)).split(",")[0].slice(3)}</li>`;
+        });
+        
+            //if(x.fullControl == false){
+            //    myCantEditGroups += `<li>${JSON.stringify(x)}</li>`;
+            
+        const myHTML = `<div>
+        <div class="row">
+            <h4>Groups I am able to edit:</h4><br>
+            <ul>${myFullControlGroups}</ul>
+        </div>
+
+        <div class="row">
+            <h4>Groups I am not able to edit:</h4><br>
+            <ul>${myCantEditGroups}</ul>
+        </div>
+
+        </div>`;
+        myElement.append(myHTML);
+
         if (myCurrentState.undoHistory.count()>0){
             $('#undoRemBtn').removeClass('disabled');
         }else{
             $('#undoRemBtn').addClass('disabled');
         }
     });
-        
+    const myString =`${adGroupDNsToRem}, ${user1Name}, ${currentUser}`;
     return data.user1sGroups;
 };

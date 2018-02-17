@@ -90,7 +90,7 @@ module.exports.validateMySingleUser = (u1, userName) => {
     });
 };
 
-module.exports.validateMyList = (u1,u2,userName) => {
+module.exports.validateMyList = (u1, u2, userName) => {
 
     function _resetMyForm(){ //DOM manipulation for when the process is cancelled
         $('.mainForm').removeClass("disabled");

@@ -27,6 +27,7 @@ require('materialize-css');
 const myModules = require('./my_modules/validate-userNames.js');
 
 $(document).ready(() => {
+    $('.modal').modal();
     $(".tabs>li>a").css("text-color", '#FFFFFF'); //a funky fix for Materialize's sass to make the tabs font color white
     $('.tooltipped').tooltip({delay: 50}); //initialize tooltips
     $('#yourNameHere').html(userName); //update DOM with current users name
