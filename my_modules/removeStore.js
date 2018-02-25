@@ -4,15 +4,15 @@
 // 2) tracks the undoHistory in the form of a List, and the undo button "unRemoves" the state as well as pops it off this undoHistory List that acts as a LIFO stack so Undo always targets the most recently removed group.
 //
 // what it DOESN'T do is update UI state when it changes.  when CREATE is called it
-// returns the list of groups to remove.
+// returns the list of groups to remove.  dom manipulations functions take it from there.
+// note that CREATE isnt a dispatched action.  it creates the store.
 
 const {List} = require('immutable');
 const Redux = require('redux');
 
-const historyReducer = (state={}, actions) => {
+const removeReducer = (state={}, actions) => {
 switch(actions.type) {
     case 'UPDATE':
-    //this needs to set fullControl to True or False
     const newADGroupsToRemove = state.adGroupsToRemove.update(actions.bind_i, val => {
         const updatedListEntry = {
             dn: val.dn,
@@ -28,11 +28,17 @@ switch(actions.type) {
     };
     break;
     case 'REMEMBER':
-    const newUndoHistory = state.undoHistory.push({dn: state.adGroupsToRemove.get(actions.bind_i), undo_i: actions.bind_i});
-    //this needs to set Removed to True
-    const newADGroupList = state.adGroupsToRemove.update(actions.bind_i, () => state.adGroupsToRemove.get(actions.bind_i).dn);
+    const newUndoHistory = state.undoHistory.push({dn: actions.dn, undo_i: actions.bind_i});
+    const newADGroupList = state.adGroupsToRemove.update(actions.bind_i, val => {
+        const updatedListEntry = {
+            dn: val.dn,
+            removed: true,
+            fullControl: val.fullControl
+        };
+        return updatedListEntry;
+    });
         return {
-            adGroupsToRemove: state.adGroupsToRemove,
+            adGroupsToRemove: newADGroupList,
             undoHistory: newUndoHistory,
             currentUser: state.currentUser
         };
@@ -40,9 +46,16 @@ switch(actions.type) {
     case 'UNDO':
     const {undo_i, dn} = state.undoHistory.first();
     const postUndoHistory = state.undoHistory.shift();
-    //const postUndoADGroupList = state.adGroupsToRemove.update(undo_i, () => dn);
+    const postUndoADGroupList = state.adGroupsToRemove.update(undo_i, val => {
+        const updatedListEntry = {
+            dn: val.dn,
+            removed: false,
+            fullControl: val.fullControl
+        };
+        return updatedListEntry;
+    });
     return {
-        adGroupsToRemove: state.adGroupsToRemove,
+        adGroupsToRemove: postUndoADGroupList,
         undoHistory: postUndoHistory,
         currentUser: state.currentUser
     };
@@ -51,10 +64,11 @@ switch(actions.type) {
 }
 };
 module.exports.CREATE = (adGroupDNsToRem, user1Name, currentUser) => {
-    function rememberADGroup(bind_i){
+    function rememberADGroup(bind_i, dn){
         return {
             type: 'REMEMBER',
-            bind_i: bind_i
+            bind_i: bind_i,
+            dn: dn
         };
     }
     function undoLastADGroup(){
@@ -70,49 +84,49 @@ module.exports.CREATE = (adGroupDNsToRem, user1Name, currentUser) => {
         };
     }
     data = JSON.parse(adGroupDNsToRem);
-    const initialGroupsToRemove = List(data.user1sGroups);
+    const  user1GroupsPlusParameters = [];
+    data.user1sGroups.forEach(x => {
+        user1GroupsPlusParameters.push({removed: false, fullControl: "not yet known", dn: x});
+    });
     const initialState = {
-        adGroupsToRemove: initialGroupsToRemove,
+        adGroupsToRemove: List(user1GroupsPlusParameters),
         undoHistory: List(),
-        currentUser,
-        user1Name
+        currentUser: currentUser,
+        user1Name: user1Name
     };
-    const store = Redux.createStore(historyReducer, initialState);
-    module.exports.REMEMBER = (i) => {store.dispatch(rememberADGroup(i));};
+    const store = Redux.createStore(removeReducer, initialState);
+    module.exports.REMEMBER = (i, dn) => {store.dispatch(rememberADGroup(i, dn));};
     
     module.exports.UNDO = () => {
         const myUndoState = store.getState();
         const myFirstInQueue = myUndoState.undoHistory.first();
         store.dispatch(undoLastADGroup());
-        return {type: 'readd', groupDN: myFirstInQueue.dn, i: myFirstInQueue.undo_i};
+        return {type: 'readd', groupDN: myFirstInQueue.dn, i: myFirstInQueue.undo_i}; //note: type here is not a Redux action type its a better-queue function type
     };
     
     module.exports.UPDATE = (bind_i, fullControl) => {store.dispatch(updateADGroup(bind_i, fullControl));};
 
-    store.subscribe( () => {
-        const myCurrentState = store.getState();
+store.subscribe(() => {
+    const myCurrentState = store.getState();
         const myElement = $('#remove_reporting_body');
         myElement.empty();
-        let myFullControlGroups, myCantEditGroups, myUnknownGroups = "";
-        const listOfFullControlGroups = myCurrentState.adGroupsToRemove.filter(function(obj){return obj.fullControl == true;});
-        listOfFullControlGroups.forEach((obj) => {
-            myFullControlGroups += `<li>${(JSON.stringify(obj.dn)).split(",")[0].slice(3)}</li>`;
+        let removedGroups=[];
+        let cantEditGroups=[];
+        let myUnknownGroups = [];
+        const LISTofRemovedGroups = myCurrentState.adGroupsToRemove.filter(function(obj){return obj.removed == true;});
+        LISTofRemovedGroups.forEach((val) => {
+            removedGroups += `${(val.dn).split(",")[0].slice(3)}<br>`;
         });
-        
-            //if(x.fullControl == false){
-            //    myCantEditGroups += `<li>${JSON.stringify(x)}</li>`;
-            
+        const LISTofCantEditGroups = myCurrentState.adGroupsToRemove.filter(function(obj){return obj.fullControl == false;});
+        LISTofCantEditGroups.forEach((val) => {
+            cantEditGroups +=  `${(val.dn).split(",")[0].slice(3)}<br>`;
+        });
         const myHTML = `<div>
         <div class="row">
-            <h4>Groups I am able to edit:</h4><br>
-            <ul>${myFullControlGroups}</ul>
+            I removed ${$('#remUserHeading').text()} from the following AD Groups:<br>${removedGroups}
+            <br>
+            I didn't have access to remove them from:<br> ${cantEditGroups}
         </div>
-
-        <div class="row">
-            <h4>Groups I am not able to edit:</h4><br>
-            <ul>${myCantEditGroups}</ul>
-        </div>
-
         </div>`;
         myElement.append(myHTML);
 
@@ -121,7 +135,7 @@ module.exports.CREATE = (adGroupDNsToRem, user1Name, currentUser) => {
         }else{
             $('#undoRemBtn').addClass('disabled');
         }
-    });
-    const myString =`${adGroupDNsToRem}, ${user1Name}, ${currentUser}`;
+});
+
     return data.user1sGroups;
 };

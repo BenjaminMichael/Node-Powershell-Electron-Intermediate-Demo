@@ -130,7 +130,7 @@ module.exports.validateMyList = (u1, u2, userName) => {
                     'currentUser' : userName
                 };
                 $('#user1').append(`<h4 class="wildwestfontStriped brown-text text-darken-3">${names.user1Name}</h4>`);
-                $('#user2').append(`<h4 class="wildwestfontStriped brown-text text-darken-3">${names.user2Name}</h4><ul class="blue darken-1"><span class="amber-text text-lighten-1">`);
+                $('#user2').append(`<h4 class="wildwestfontStriped brown-text text-darken-3" id="user2sName">${names.user2Name}</h4><ul class="blue darken-1"><span class="amber-text text-lighten-1">`);
                 $('#queryingSign').text(`Checking for ${u1} and ${u2}'s memberships`);
                     return ADGroupCompare.listOfGroupsToCompare(names);
                      }

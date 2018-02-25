@@ -173,7 +173,7 @@ min-height:20vh;
     <!--Compare Tab -->
       <div id="compareTab" class="myTabs row orange accent-1 verticalPadding">
         <div class="row brown-text text-darken-1" id="userinputarea">
-              <div class="row center  ">
+              <div class="row center">
                 <div class="col s1 m1 l1"></div>
                 <input type="text" class="brown-text text-darken-3 col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="Compare this user">
                 <div class="col s1 m1 l1"></div>
@@ -184,7 +184,8 @@ min-height:20vh;
                 <input type="text" class="brown-text text-darken-3 col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions TO this uniqname" id="user2Input" placeholder="to this user"></div>
               </div>
             <div id="queryingSign" class="hidden topMargin row wood-color center z-depth-2  primary-text-color wildwestfont">querying Active Directory...</div>
-          <div class="row white-text darken-2" id="useroutputarea">
+          <div class="row white-text darken-2 hidden" id="useroutputarea">
+            <div class="row"><div class="z-depth-3 roboto btn-floating btn-large waves-effect waves-light purple white-text modal-trigger" href="#reportingModal" id="reportRemBtn"><i class="material-icons">assignment</i></div>&nbsp;&nbsp;Report</div>
             <div class="col s12 m6 l6 orange accent-1 white-text center" id="user1"></div>        
             <div class="col s12 m6 l6 orange accent-1 white-text center" id="user2"></div>
           </div>
@@ -226,7 +227,7 @@ min-height:20vh;
   </div>
 </div>
   <div class="modal-footer">
-      <div class="left btn-flat white">copy to clipboard</div>
+      <div class="left white">Click &nbsp;<div class="btn woodSign white-text">here</div>&nbsp; to copy text to clipboard</div>
     <h3>
       <a href="#!" class="modal-action modal-close waves-effect waves-purple purple-text z-depth-4 btn-flat white text-darken-1">return</a>
     </h3>

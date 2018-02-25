@@ -3,13 +3,13 @@ return `<li class="brown z-depth-3 tooltipped darken-4" data-position="bottom" d
 });
 
 module.exports.compare_parseUser1Unique = ((value, i) => {
-    const groupName = value.dn.split(",")[0].slice(3);
+    const groupName = value.split(",")[0].slice(3);
     return `
-    <li class="white blue-text row z-depth-2 valign-wrapper">
+    <li class="white row z-depth-2 valign-wrapper">
         <div class="col s1 m1 l1">
             <div class="${i==0?`led-yellow`:`led-blue`}" id="LED-${i}"></div>
         </div>
-        <div class="col s11 m11 l11 blue-text text-darken-3 roboto">
+        <div class="col s11 m11 l11 brown-text text-darken-3">
             ${groupName}
             <div class="hidden center btn-floating btn-large waves-effect waves-light right green white-text lighten-1 z-depth-2" id="copyGroupBtn${i}">
                 <i class="close material-icons large">add</i>
@@ -20,7 +20,7 @@ module.exports.compare_parseUser1Unique = ((value, i) => {
 });
 
 module.exports.compare_parseUser2Unique = ((u1Name, value) => {
-const groupName = value.dn.split(",")[0].slice(3);
+const groupName = value.split(",")[0].slice(3);
 return `<li class="z-depth-3 wood-color tooltipped" data-position="bottom" data-delay="50" data-tooltip="This is a group ${u1Name} is not in.">${groupName}</li>`;
 });
 
@@ -49,12 +49,12 @@ module.exports.compare_addADGroup_success = (data =>{
         `);
     });
 
-module.exports.compare_addADGroup_error = (data =>{
+module.exports.compare_addADGroup_error = (data => {
         $(`#copyGroupBtn${data[0].bind_i}`).addClass("amber").removeClass("green");
         $('#redMessageBar').html(data[1]);  
     });
 
-module.exports.compare_removeADGroup = (output =>{
+module.exports.compare_removeADGroup = (output => {
     const data = JSON.parse(output);
     if(data[0].Result==="Success"){
         $(`#copyGroupBtn${data[0].bind_i}`).slideToggle('slow').removeClass('disabled').addClass('green').removeClass('pulse');
@@ -75,7 +75,7 @@ module.exports.remove_parseListOfGroups = ((groupNamesList, user1name) => {
             <div class="${index==0?`led-yellow`:`led-blue`}" id="REM-LED-${index}"></div>
         </div>
         <div class="col s11 m11 l11 black-text">
-        ${val.dn.split(",")[0].slice(3)}
+        ${val.split(",")[0].slice(3)}
             <div class="hidden center btn-floating btn-large waves-effect waves-light right green white-text lighten-1 z-depth-2" id="REM-ADGroupBtn${index}">
                 <i class="close material-icons large">remove</i>
             </div>
