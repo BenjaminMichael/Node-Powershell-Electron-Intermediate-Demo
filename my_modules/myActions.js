@@ -4,7 +4,12 @@ const CompareStore = require('./compareStore.js');
 const {Set} = require('immutable');
 const DOM = require('./DOMmanipulation.js');
 var Queue = require('better-queue');
+const remote = require('electron').remote;
 
+const RESTART = () => {
+    remote.app.relaunch();
+    remote.app.exit(0);
+};
 
 module.exports.compareBtnClickedUpdateDOM = () => {
     $('.mainForm').addClass("disabled");
@@ -275,6 +280,10 @@ const COMPARE = (outputfromPS, names) => {
     });
     
     DOM.compare_parseListFinalStep(letUser1Output, letUser2Output);
+   
+    $('#compareRestartBtn').click(() => {
+        RESTART();
+    });
 
     //At this point the user has two lists to visually compare.
     //Next we check if the current user has access to add user2 to user1's groups.
@@ -385,6 +394,9 @@ const REMOVE = (outputfromPS, names) => {
     $('#undoRemBtn').click(() => {
         $('#undoRemBtn').addClass('pulse disabled');
         readdOrRemoveADGroupQueue.push(RemoveStore.UNDO());
+    });
+    $('#removeRestartBtn').click(() => {
+        RESTART();
     });
 
     //iterate through all the groups to check effective access

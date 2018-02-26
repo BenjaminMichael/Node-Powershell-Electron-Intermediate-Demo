@@ -3,18 +3,10 @@
 //make it look better overall  -standard tab design.  make the purple footger look good on big monitors.  fix text input color.  the screen that slides up could be wooden
 //
 //we need a reset button
-//
-//is there any way to stop the horizontal scrolling with clouds css?
-//
-//set cursor focus in the compare field when tab is clicked
-//make hitting [enter] submit the form
-//
-//
-//design modal and wire it up to data store for reporting
-//
+//ned a flip users button for compasre
+//set cursor focus in the compare field when tab is clicked?
+//make hitting [enter] submit the form!! <--!
 //make welcome tab more informative
-//
-// cache icons and any other web assets locally
 
 //renderer.js
 
@@ -26,12 +18,18 @@ window.Hammer = require('./node_modules/materialize-css/js/hammer.min.js'); // T
 require('materialize-css');
 const myModules = require('./my_modules/myActions.js');
 
+
 $(document).ready(() => {
     $('.modal').modal(); //initialize Materialize modal
     $(".tabs>li>a").css("text-color", '#FFFFFF'); //a funky fix for Materialize's sass to make the tabs font color white
     $('.tooltipped').tooltip({delay: 50}); //initialize tooltips
     $('#yourNameHere').html(userName); //update DOM with current users name
-
+    
+    $('#user1Input #user2Input').keydown(function(evt){
+        if (evt.keyCode == 13) {
+            alert('success!');
+        }
+    });
     $('#btnCompare').click(() => {
         //you can only use one tab per session
         $('#removeTabButton').addClass('disabled grey').removeClass('brown');

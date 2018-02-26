@@ -188,6 +188,16 @@ min-height:20vh;
 
       <!-- Just clouds -->
       <div class="cloud x1" id="bigCloud"></div>
+      <div class="center row hidden" id="compareOptionButtons">
+          <div class="col s1 m1 l1"></div>
+        <div class="col s3 m3 l3 ">  
+          <div class="z-depth-3 roboto btn-floating btn-large waves-effect waves-light purple white-text modal-trigger" href="#reportingModal" id="reportRemBtn"><i class="material-icons">assignment</i></div>&nbsp;&nbsp;Report
+        </div>
+        <div class="col s1 m1 l1"></div>
+        <div class="col s3 m3 l3">
+          <div class="z-depth-3 roboto btn-floating btn-large waves-effect waves-light purple white-text" id="compareRestartBtn"><i class="material-icons">autorenew</i></div>&nbsp;&nbsp;Restart
+        </div>
+      </div>
       <div class="cloud x2"></div>
 
     <!--Welcome Tab -->
@@ -212,12 +222,13 @@ min-height:20vh;
                 <input type="text" class="brown-text text-darken-3 col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions TO this uniqname" id="user2Input" placeholder="to this user"></div>
               </div>
             <div id="queryingSign" class="hidden topMargin row wood-color center z-depth-2  primary-text-color wildwestfont">querying Active Directory...</div>
-          <div class="row white-text darken-2 hidden" id="useroutputarea">
-            <div class="row"><div class="z-depth-3 roboto btn-floating btn-large waves-effect waves-light purple white-text modal-trigger" href="#reportingModal" id="reportRemBtn"><i class="material-icons">assignment</i></div>&nbsp;&nbsp;Report</div>
-            <div class="col s12 m6 l6 orange accent-1 white-text center" id="user1"></div>        
+          <div class="white-text darken-2 hidden" id="useroutputarea">
+           <div class="row">
+              <div class="col s12 m6 l6 orange accent-1 white-text center" id="user1"></div>        
             <div class="col s12 m6 l6 orange accent-1 white-text center" id="user2"></div>
+        </div>
+        </div>
           </div>
-      </div>
 
       <!--Remove Tab -->
       <div id="removeTab" class="myTabs row verticalPadding">
@@ -237,6 +248,7 @@ min-height:20vh;
                 <li class="valign-wrapper woodSign z-depth-3 wildwestFontSmall orange-text text-accent-1" id="remUserHeading"></li>
                 <li><div class="z-depth-3 roboto btn-floating btn-large waves-effect waves-light purple white-text disabled" id="undoRemBtn"><i class="material-icons">undo</i></div>&nbsp;&nbsp;Undo</li>
                 <li><div class="z-depth-3 roboto btn-floating btn-large waves-effect waves-light purple white-text modal-trigger" href="#reportingModal" id="reportRemBtn"><i class="material-icons">assignment</i></div>&nbsp;&nbsp;Report</li>
+                <li><div class="z-depth-3 roboto btn-floating btn-large waves-effect waves-light purple white-text" id="removeRestartBtn"><i class="material-icons">autorenew</i></div>&nbsp;&nbsp;Restart</li>
               </ul>
             </div>
           <div class="col s5 m5 l5 orange roboto accent-1 white-text" id="user1RemoveList"></div> 

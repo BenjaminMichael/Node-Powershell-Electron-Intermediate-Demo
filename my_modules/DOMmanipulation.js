@@ -1,3 +1,4 @@
+
 module.exports.compare_parseMatching = (groupName => {
 return `<li class="brown z-depth-3 tooltipped darken-4" data-position="bottom" data-delay="50" data-tooltip="This is a group both users are already in.">${groupName}</li>`;
 });
@@ -31,6 +32,7 @@ module.exports.compare_parseListFinalStep = ((letUser1Output, letUser2Output) =>
     $('#user2').append(letUser2Output); 
     $('#emptyRow').empty(); //remove the prelaunch progressbar
     $('#queryingSign').toggleClass('hidden');
+    $('#compareOptionButtons').toggleClass('hidden');
     $('#useroutputarea').slideToggle("slow", "swing");//spiffy animation
     $('.tooltipped').tooltip(); //dynamic tooltip reinitialization for our new HTML
 });
