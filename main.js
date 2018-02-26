@@ -32,22 +32,6 @@ function createMenu() {
           }
 
         ]
-    },
-    {
-      label: 'Tools',
-      submenu: [
-        {
-          label: 'Current User',
-            click () {
-                let user = GERTWHOAMI;
-                dialog.showMessageBox({
-                    type: "info",
-                    title: "Current User",
-                    message: `You are running as: ${user}.`
-                });
-            }
-        }
-      ]
     }
   ];
 
