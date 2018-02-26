@@ -1,59 +1,38 @@
 const powershell = require('node-powershell');
-const RemoveStore = require('./removeStore.js');
-const CompareStore = require('./compareStore.js');
+const RemoveStore = require('./removeStore.js'); //redux datastore
+const CompareStore = require('./compareStore.js'); //redux datastore
 const {Set} = require('immutable');
-const DOM = require('./DOMmanipulation.js');
+const DOM = require('./DOMmanipulation.js'); //I use this module for most of the times I need to manipulate the user interface 
 var Queue = require('better-queue');
-const remote = require('electron').remote;
-
-const RESTART = () => {
-    remote.app.relaunch();
-    remote.app.exit(0);
-};
-
-module.exports.compareBtnClickedUpdateDOM = () => {
-    $('.mainForm').addClass("disabled");
-    $('#redMessageBar').empty();
-    setTimeout(function(){
-        $('#queryingSign').removeClass('hidden');
-        $('#userinputarea').slideToggle("slow");
-        $('#emptyRow').html(`<div class="row center">
-                                <div class="progress">
-                                    <div class="indeterminate"></div>
-                                </div>  
-                            </div>`);},500);
-    };
-
-module.exports.removeBtnClickedUpdateDOM = () => {
-    $('#removeGroupsInput').addClass("disabled");
-    $('#redMessageBar').empty();
-    setTimeout(function(){
-        $('#queryingSignRemoveTab').removeClass('hidden');
-        $('#removeuserinputarea').slideToggle("slow");
-        $('#emptyRow').html(`<div class="row center">
-                                <div class="progress">
-                                    <div class="indeterminate"></div>
-                                </div>  
-                            </div>`);},500);
-    };
 
 
-module.exports.validateMySingleUser = (u1, userName) => {
-    function _resetMyForm(){
-        $('#removeGroupsInput').removeClass("disabled");
-        $('#removeuserinputarea').slideToggle("slow");
-        $('#emptyRow').empty();
-        $('#btnRemove').addClass('ready');
-        $('#queryingSignRemoveTab').slideToggle('slow');
-    }
+module.exports.beginCompare = ((userName) => {
+        $('#removeTabButton').addClass('disabled grey').removeClass('brown'); //you can only use one tab per session so we disable on click
+        DOM.compareBtnClickedUpdateDOM();
+        validateMyList($('#user1Input').val(), $('#user2Input').val(), userName);
+});
 
+module.exports.beginRemove = ((userName) => {
+        $('#compareTabButton').addClass('disabled grey').removeClass('brown'); //you can only use one tab per session so we disable on click
+        DOM.removeBtnClickedUpdateDOM();
+        validateMySingleUser($('#removeGroupsInput').val(), userName);
+});
+
+
+// --------------------------------------------------------------------
+// functions validateMySingleUser and validateMyList are for checking to see that the names entered are really user objectsd in AD
+//
+//
+
+const validateMySingleUser = ((u1, userName) => {
     if(u1 ===""){
         setTimeout(function(){
-            _resetMyForm();
+            DOM.resetMyRemoveForm();
             $('#redMessageBar').html(`You must enter a uniqname`);
         },1000);  //if you dont wait for 1000 its too fast for the other animations
         return; //end the function before we even begin our PS process if theres a blank input field
     }
+
     let ps = new powershell({
         executionPolicy: 'Bypass',
         noProfile: true
@@ -65,39 +44,28 @@ module.exports.validateMySingleUser = (u1, userName) => {
         const data=JSON.parse(output);
         if(data[3].Value.ModuleFound ===false){$('#redMessageBar').html(`This program cannot check your effectice permissions without PowerShell Access Control Module.  Please reinstall the program as administrator.  You can download it from the internet and unzip it to C:\\Program Files\\WindowsPowerShell\\Modules but you will still need local admin to do that.`);return;};
         if(data[2].Error.Message !== "No error"){
-           _resetMyForm(); //error occurred, reset form
+           
+           DOM.resetMyRemoveForm(); //error occurred, reset form
            $('#redMessageBar').html(data[2].Error.Message); //report the error
            return; //end the function
         }else{
-            
             let names= {
                 'user1Name' : u1,
                 'user1DN' : (data[0].DN).toString(),
                 'currentUser' : userName
             };
-            //animation needed
-            //$('#queryingSignRemoveTab').slideToggle('slow');
-            
             return listOfGroupsToRemove(names);
         }
     })
     .catch(err=>{
         ps.dispose();
     });
-};
+});
 
-module.exports.validateMyList = (u1, u2, userName) => {
-
-    function _resetMyForm(){ //DOM manipulation for when the process is cancelled
-        $('.mainForm').removeClass("disabled");
-        $('#userinputarea').slideToggle("slow");
-        $('#emptyRow').empty();
-        $('#btnCompare').addClass('ready');
-    }
-
+const validateMyList = ((u1, u2, userName) => {
     if (u1 ==="" || u2===""){
         setTimeout(function(){
-            _resetMyForm();
+            DOM.resetMyCompareForm();
             $('#redMessageBar').html(`You must enter 2 uniqnames`);
         },1000);  //if you dont wait for 1000 its too fast for the other animations
         return; //end the function before we even begin our PS process if theres a blank input field
@@ -114,7 +82,7 @@ module.exports.validateMyList = (u1, u2, userName) => {
         const data=JSON.parse(output);
         if(data[3].Value.ModuleFound ===false){$('#redMessageBar').html(`This program cannot check your effectice permissions without PowerShell Access Control Module.  Please reinstall the program as administrator.  You can download it from the internet and unzip it to C:\\Program Files\\WindowsPowerShell\\Modules but you will still need local admin to do that.`);return;};
         if(data[2].Error.Message !== "No error"){
-           _resetMyForm(); //error occurred, reset form
+           DOM.resetMyCompareForm(); //error occurred, reset form
            $('#redMessageBar').html(data[2].Error.Message); //report the error
            return; //end the function
         }else{
@@ -134,18 +102,17 @@ module.exports.validateMyList = (u1, u2, userName) => {
     .catch(err=>{
         ps.dispose();
     });    
-};
-
-
+});
 
 /*
-FUNCTION: listOfGroupsToCompare
+----------------------------------------------------------------------------
+Functions listOfGroupsToCompare and listOfGroupsToRemove
  @param {JSON array element} names:
- {String} u1DN distinguished name of "user 1"
- {String} u2DN distinguished name of "user 2"
- {String} u1Name short name of "user 1"
- {String} u2Name short name of "user 2"
- {String} currentUserName short name of the user running this program
+        {String} u1DN distinguished name of "user 1"
+        {String} u2DN distinguished name of "user 2"
+        {String} u1Name short name of "user 1"
+        {String} u2Name short name of "user 2"
+        {String} currentUserName short name of the user running this program
 
  Description: Updates the DOM with a list of both matching and nonmatching group memberships.
  Then it checks User 1's nonmatching groups to see if the current user has permission to add
@@ -193,7 +160,11 @@ const listOfGroupsToRemove = (names) => {
     });
 };
 
-//compare and remove functions
+
+// -------------------------------------------------------------------------------
+// COMPARE and REMOVE functions encapsulate all the rest of this application logic
+//
+//
 
 const COMPARE = (outputfromPS, names) => {
 
@@ -281,9 +252,7 @@ const COMPARE = (outputfromPS, names) => {
     
     DOM.compare_parseListFinalStep(letUser1Output, letUser2Output);
    
-    $('#compareRestartBtn').click(() => {
-        RESTART();
-    });
+
 
     //At this point the user has two lists to visually compare.
     //Next we check if the current user has access to add user2 to user1's groups.
@@ -390,13 +359,9 @@ const REMOVE = (outputfromPS, names) => {
 
     const groupNamesList =  RemoveStore.CREATE(outputfromPS, names.user1Name, names.currentUser);
     DOM.remove_parseListOfGroups(groupNamesList, names.user1Name);
-    
     $('#undoRemBtn').click(() => {
         $('#undoRemBtn').addClass('pulse disabled');
         readdOrRemoveADGroupQueue.push(RemoveStore.UNDO());
-    });
-    $('#removeRestartBtn').click(() => {
-        RESTART();
     });
 
     //iterate through all the groups to check effective access

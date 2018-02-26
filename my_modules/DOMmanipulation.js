@@ -1,3 +1,55 @@
+const remote = require('electron').remote;
+
+const RESTART = () => {
+    remote.app.relaunch();
+    remote.app.exit(0);
+};
+
+module.exports.compareBtnClickedUpdateDOM = (() => {
+    $('.mainForm').addClass("disabled");
+    $('#compareOptionButtons').slideToggle('slow');
+    $('#compareRestartBtn').click(() => {
+        RESTART();
+    });
+    $('#redMessageBar').empty();
+    setTimeout(function(){
+        $('#queryingSign').removeClass('hidden');
+        $('#userinputarea').slideToggle("slow");
+        $('#emptyRow').html(`<div class="row center">
+                                <div class="progress">
+                                    <div class="indeterminate"></div>
+                                </div>  
+                            </div>`);},500);
+    });
+
+module.exports.removeBtnClickedUpdateDOM = (() => {
+    $('#removeGroupsInput').addClass("disabled");
+    $('#redMessageBar').empty();
+    setTimeout(function(){
+        $('#queryingSignRemoveTab').removeClass('hidden');
+        $('#removeuserinputarea').slideToggle("slow");
+        $('#emptyRow').html(`<div class="row center">
+                                <div class="progress">
+                                    <div class="indeterminate"></div>
+                                </div>  
+                            </div>`);},500);
+    });
+
+module.exports.resetMyRemoveForm = (() => {
+        $('#removeGroupsInput').removeClass("disabled");
+        $('#removeuserinputarea').slideToggle("slow");
+        $('#emptyRow').empty();
+        $('#btnRemove').addClass('ready');
+        $('#queryingSignRemoveTab').slideToggle('slow');
+});
+
+module.exports.resetMyCompareForm = (() => {
+    $('.mainForm').removeClass("disabled");
+    $('input').removeClass('notReady');
+    $('#userinputarea').slideToggle("slow");
+    $('#emptyRow').empty();
+    $('#btnCompare').addClass('ready');
+});
 
 module.exports.compare_parseMatching = (groupName => {
 return `<li class="brown z-depth-3 tooltipped darken-4" data-position="bottom" data-delay="50" data-tooltip="This is a group both users are already in.">${groupName}</li>`;
@@ -32,7 +84,6 @@ module.exports.compare_parseListFinalStep = ((letUser1Output, letUser2Output) =>
     $('#user2').append(letUser2Output); 
     $('#emptyRow').empty(); //remove the prelaunch progressbar
     $('#queryingSign').toggleClass('hidden');
-    $('#compareOptionButtons').toggleClass('hidden');
     $('#useroutputarea').slideToggle("slow", "swing");//spiffy animation
     $('.tooltipped').tooltip(); //dynamic tooltip reinitialization for our new HTML
 });
@@ -91,6 +142,9 @@ module.exports.remove_parseListOfGroups = ((groupNamesList, user1name) => {
     $('#user1RemoveList, #hiddenUndoBtnRow').slideToggle("slow", "swing");
     $('#queryingSignRemoveTab').slideToggle('slow');
     $('#remUserHeading').html(`<h4>${user1name}</h4>`);
+    $('#removeRestartBtn').click(() => {
+        RESTART();
+    });
 });
 
 module.exports.remove_readd = ((data) => {
