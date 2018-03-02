@@ -10,7 +10,6 @@
 
 //renderer.js
 
-const powershell = require('node-powershell');
 window.$ = window.jQuery = require('./node_modules/jquery/dist/jquery.js'); // I use this when the NPM 'node_modules' folder is in my project and NOT installed globally.
 window.Hammer = require('./node_modules/materialize-css/js/hammer.min.js'); // The sequence of these requires is important
 require('materialize-css');
@@ -20,6 +19,7 @@ var userName = process.env['USERPROFILE'].split(path.sep)[2];
 
 
 $(document).ready(() => {
+    $('.carousel.carousel-slider').carousel({fullWidth: true});//initialize materialize carousel
     $('.modal').modal(); //initialize Materialize modal
     $(".tabs>li>a").css("text-color", '#FFFFFF'); //a funky fix for Materialize's sass to make the tabs font color white
     $('.tooltipped').tooltip({delay: 50}); //initialize tooltips
@@ -31,6 +31,13 @@ $(document).ready(() => {
         myModules.beginCompare(userName);
         }
     });
+    $('#removeuserinputarea').keydown(function(evt){
+        if (!($('#removeuserinputarea').hasClass('notReady')) && evt.keyCode === 13) {
+            $('#removeuserinputarea').addClass('notReady');
+        myModules.beginRemove(userName);
+        }
+    });
+
     $('#btnCompare').click(() => {
         $(this).addClass('disabled');
         myModules.beginCompare(userName);

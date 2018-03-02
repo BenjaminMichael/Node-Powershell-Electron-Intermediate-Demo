@@ -79,20 +79,13 @@ module.exports.CREATE = (user1UniqGroups, names) => {
         let cantEditGroups=[];
         let addedGroups =[];
         myCurrentState.groupsAdded.forEach((val) =>{
-            addedGroups +=  `${(val.dn).split(",")[0].slice(3)}<br>`;
+            addedGroups +=  `${(val.dn).split(",")[0].slice(3)}\r\n <br>`;
         });
-        console.log( myCurrentState.adGroupsToCompare);
         const LISTofCantEditGroups = myCurrentState.adGroupsToCompare.filter(function(obj){return obj.fullControl == false;});
         LISTofCantEditGroups.forEach((val) => {
-            cantEditGroups +=  `${(val.dn).split(",")[0].slice(3)}<br>`;
+            cantEditGroups +=  `${(val.dn).split(",")[0].slice(3)}\r\n <br>`;
         });
-        const myHTML = `<div>
-        <div class="row">
-            I added ${$('#user2sName').text()} to the following AD Groups:<br>${addedGroups}
-            <br>
-            I didn't have access to add them to:<br> ${cantEditGroups}
-        </div>
-        </div>`;
+        const myHTML = `I added ${$('#user2sName').text()} to the following AD Groups:${addedGroups}<br>I didn't have access to add them to:<br>${cantEditGroups}`;
         myElement.append(myHTML);
     });
 

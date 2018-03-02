@@ -70,6 +70,10 @@
         font-size:3em;
         
       }
+      .welcomeText{
+        font-size: 2em;
+        font-family: 'Lato', sans-serif;
+    }
       h4{
         font-family: 'Lato', sans-serif;
       }
@@ -97,7 +101,6 @@ min-height:20vh;
     }
 #useroutputarea{
   height:85vh;
-  display:none;
 }
 #user1RemoveList{
   margin-left:2vw;
@@ -109,6 +112,7 @@ min-height:20vh;
 }
 #userinputarea{
   height:85vh;
+  display:hidden;
 }
 .wildwestfont{
   font-family: 'RioGrande';
@@ -150,6 +154,9 @@ min-height:20vh;
 #user2Input{
   font-size:1.2em;
 }
+#compareOptionButtons{
+ padding-top:4px;
+}
     </style>
   </head>
   <body><main>
@@ -173,7 +180,7 @@ min-height:20vh;
 
     <!-- Nav Row -->
     <div class="row customPadding" id="topNav">
-      <ul class="tabs row brown darken-3 roundCorners">
+      <ul class="tabs row brown darken-3 roundCorners" id="btnList">
         <li class="tab col s5">
           <span class="coaster">
             <span class="coaster__stitch"></span>
@@ -181,38 +188,63 @@ min-height:20vh;
           </span> 
         </li>
         <li class="tab col s2"><a class="active" href="#welcomeTab"><div class="row">Welcome</div></a></li>
-        <li class="tab col s2" id="compareTabButton"><a href="#compareTab">Compare</a></li>
+        <li class="tab col s2" id="compareTabButton"><a href="#compareTab" id="ctablink">Compare</a></li>
         <li class="tab col s2" id="removeTabButton"><a href="#removeTab">Remove</a></li>
       </ul>
     </div>
 
       <!-- Just clouds -->
       <div class="cloud x1" id="bigCloud"></div>
-      <div class="center row hidden" id="compareOptionButtons">
-          <div class="col s1 m1 l1"></div>
-        <div class="col s3 m3 l3 ">  
-          <div class="z-depth-3 roboto btn-floating btn-large waves-effect waves-light purple white-text modal-trigger" href="#reportingModal" id="reportRemBtn"><i class="material-icons">assignment</i></div>&nbsp;&nbsp;Report
-        </div>
-        <div class="col s1 m1 l1"></div>
-        <div class="col s3 m3 l3">
-          <div class="z-depth-3 roboto btn-floating btn-large waves-effect waves-light purple white-text" id="compareRestartBtn"><i class="material-icons">autorenew</i></div>&nbsp;&nbsp;Restart
-        </div>
-      </div>
       <div class="cloud x2"></div>
 
     <!--Welcome Tab -->
     <div id="welcomeTab" class="myTabs row woodSign dark-primary-color">
       <div class="customPadding row">
         <div class="col s12 m12 l12  center orange-text text-lighten-2 thinMargin"><h1>(AD Group Wrangler)</h1></div>
-        
+        <div class="carousel carousel-slider welcomeText" data-indicators="true">
+            <div class="carousel-fixed-item center">
+              LogoHere
+            </div>
+            <div class="carousel-item wooden orange-text text-accent-2" href="#one!">
+              
+                <h2>Howdy pardner</h2> Click on a workflow to <span class="brown darken-3 white-text roundCorners z-depth-1">&nbsp;&nbsp;Compare&nbsp;&nbsp;</span> one user to another or <span class="brown darken-3 white-text roundCorners z-depth-1">&nbsp;&nbsp;Remove&nbsp;&nbsp;</span> a user from some AD Groups.
+              <br>
+              <p class="orange-text text-accent-1">Tip: Be careful because groups you add and remove are add/removed in AD in real time.
+              </p>
+            </div>
+            <div class="carousel-item wooden orange-text text-accent-2" href="#two!">
+              <p class="orange-text text-accent-1">
+                <ul>
+                  <li class="row">
+                    <div class="led-red col"></div><p class="col orange-text text-accent-1">Red lights indicate you do not have access to add/remove a group.</p>
+                  </li>
+                  <li class="row">
+                    <div class="led-blue col"></div><p class="col orange-text text-accent-1">Blue lights indicate groups that are queued to have your Effect Access checked.</p>
+                  </li>
+                  <li class="row">
+                    <div class="led-yellow col"></div><p class="col orange-text text-accent-1">The yellow light indicates the group currently being checked against your permissions.</p>
+                  </li>
+                </ul>
+              </p>
+            </div>
+            <div class="carousel-item wooden orange-text text-accent-2" href="#three!">
+              The <span class="brown darken-3 white-text roundCorners z-depth-1">&nbsp;&nbsp;compare&nbsp;&nbsp;</span> workflow is based on a common scenario: make one user's group memberships like an existing user's.  User 1 on the left is the person who has groups we want to copy.  User 2 on the right is where we enter that user we want to add to some new groups.
+            </div>
+            <div class="carousel-item wooden orange-text text-accent-2" href="#four!">
+                <h2>Clicking add a group will add them to the group in Active Directory</h2><div class="center btn-floating btn-large waves-effect waves-light green white-text lighten-1 z-depth-2">
+                    <i class="close material-icons large">add</i>
+                </div>
+                <p class="orange-text text-accent-1">or click to remove... and when you undo you are doing the opposite add/remove operation.</p>
+            </div>
+          </div>
       </div> 
     </div>
 
     <!--Compare Tab -->
       <div id="compareTab" class="myTabs row orange accent-1 verticalPadding">
         <div class="row brown-text text-darken-1" id="userinputarea">
-              <div class="row center">
-                <div class="col s1 m1 l1"></div>
+              <div class="row">
+                <div class="col s2 m2 l2"></div>
                 <input type="text" class="brown-text text-darken-3 col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions FROM this uniqname" id="user1Input" placeholder="Compare this user">
                 <div class="col s1 m1 l1"></div>
                 <div class="col">
@@ -222,8 +254,20 @@ min-height:20vh;
                 <input type="text" class="brown-text text-darken-3 col s3 m3 l3 mainForm tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy permissions TO this uniqname" id="user2Input" placeholder="to this user"></div>
               </div>
             <div id="queryingSign" class="hidden topMargin row wood-color center z-depth-2  primary-text-color wildwestfont">querying Active Directory...</div>
-          <div class="white-text darken-2 hidden" id="useroutputarea">
+          <div class="white-text hidden" id="useroutputarea">
            <div class="row">
+              <div class="row brown-text text-darken-3" id="compareOptionButtons">
+                <div class="col s4 m4 l4"></div>
+                <div class="col s4 m4 l4 ">  
+                  <div class="btn-flat waves-effect waves-light accent-color white-text modal-trigger" href="#reportingModal" id="reportRemBtn">
+                    <i class="material-icons">assignment</i></div>&nbsp;&nbsp;Report
+                </div>
+                <div class="col s4 m4 l4">
+                  <div class="btn-flat waves-effect waves-light accent-color white-text" id="compareRestartBtn">
+                    <i class="material-icons">autorenew</i></div>&nbsp;&nbsp;Restart
+                </div>
+                
+              </div>
               <div class="col s12 m6 l6 orange accent-1 white-text center" id="user1"></div>        
             <div class="col s12 m6 l6 orange accent-1 white-text center" id="user2"></div>
         </div>
@@ -246,9 +290,9 @@ min-height:20vh;
             <div class="col s4 m4 l4">
               <ul>
                 <li class="valign-wrapper woodSign z-depth-3 wildwestFontSmall orange-text text-accent-1" id="remUserHeading"></li>
-                <li><div class="z-depth-3 roboto btn-floating btn-large waves-effect waves-light purple white-text disabled" id="undoRemBtn"><i class="material-icons">undo</i></div>&nbsp;&nbsp;Undo</li>
-                <li><div class="z-depth-3 roboto btn-floating btn-large waves-effect waves-light purple white-text modal-trigger" href="#reportingModal" id="reportRemBtn"><i class="material-icons">assignment</i></div>&nbsp;&nbsp;Report</li>
-                <li><div class="z-depth-3 roboto btn-floating btn-large waves-effect waves-light purple white-text" id="removeRestartBtn"><i class="material-icons">autorenew</i></div>&nbsp;&nbsp;Restart</li>
+                <li><div class="z-depth-3 roboto btn-floating btn-large waves-effect waves-light accent-color white-text disabled" id="undoRemBtn"><i class="material-icons">undo</i></div>&nbsp;&nbsp;Undo</li>
+                <li><div class="z-depth-3 roboto btn-floating btn-large waves-effect waves-light accent-color white-text modal-trigger" href="#reportingModal" id="reportRemBtn"><i class="material-icons">assignment</i></div>&nbsp;&nbsp;Report</li>
+                <li><div class="z-depth-3 roboto btn-floating btn-large waves-effect waves-light accent-color white-text" id="removeRestartBtn"><i class="material-icons">autorenew</i></div>&nbsp;&nbsp;Restart</li>
               </ul>
             </div>
           <div class="col s5 m5 l5 orange roboto accent-1 white-text" id="user1RemoveList"></div> 
@@ -267,9 +311,9 @@ min-height:20vh;
   </div>
 </div>
   <div class="modal-footer">
-      <div class="left white">Click &nbsp;<div class="btn woodSign white-text">here</div>&nbsp; to copy text to clipboard</div>
+      <div class="left white">Click &nbsp;<div class="btn woodSign white-text" id="clickToCopy">here</div>&nbsp; to copy text to clipboard</div>
     <h3>
-      <a href="#!" class="modal-action modal-close waves-effect waves-purple purple-text z-depth-4 btn-flat white text-darken-1">return</a>
+      <a href="#!" class="modal-action modal-close waves-effect waves-purple blue-text z-depth-4 btn-flat white text-darken-2">return</a>
     </h3>
   </div>
 </div>

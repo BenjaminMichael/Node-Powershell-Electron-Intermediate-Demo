@@ -121,13 +121,7 @@ store.subscribe(() => {
         LISTofCantEditGroups.forEach((val) => {
             cantEditGroups +=  `${(val.dn).split(",")[0].slice(3)}<br>`;
         });
-        const myHTML = `<div>
-        <div class="row">
-            I removed ${$('#remUserHeading').text()} from the following AD Groups:<br>${removedGroups}
-            <br>
-            I didn't have access to remove them from:<br> ${cantEditGroups}
-        </div>
-        </div>`;
+        const myHTML = `I removed ${$('#remUserHeading').text()} from the following AD Groups:<br>${removedGroups}<br>I didn't have access to remove them from:<br>${cantEditGroups}`;
         myElement.append(myHTML);
 
         if (myCurrentState.undoHistory.count()>0){

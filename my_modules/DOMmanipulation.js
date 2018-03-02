@@ -1,13 +1,26 @@
 const remote = require('electron').remote;
+const {clipboard} = require('electron')
+
 
 const RESTART = () => {
     remote.app.relaunch();
     remote.app.exit(0);
 };
 
+const COPYTOCLIPBOARD = () => {
+let myText = $('#remove_reporting_body').html();
+myText = myText.split('<br>');
+let formattedText ="";
+myText.forEach(line => {formattedText += `${(line.toString())}\r\n`;});
+clipboard.writeText(formattedText);
+
+};
+
 module.exports.compareBtnClickedUpdateDOM = (() => {
     $('.mainForm').addClass("disabled");
-    $('#compareOptionButtons').slideToggle('slow');
+    $('#clickToCopy').click(() => {
+        COPYTOCLIPBOARD();
+    });
     $('#compareRestartBtn').click(() => {
         RESTART();
     });
@@ -25,6 +38,9 @@ module.exports.compareBtnClickedUpdateDOM = (() => {
 module.exports.removeBtnClickedUpdateDOM = (() => {
     $('#removeGroupsInput').addClass("disabled");
     $('#redMessageBar').empty();
+    $('#clickToCopy').click(() => {
+        COPYTOCLIPBOARD();
+    });
     setTimeout(function(){
         $('#queryingSignRemoveTab').removeClass('hidden');
         $('#removeuserinputarea').slideToggle("slow");
@@ -41,6 +57,7 @@ module.exports.resetMyRemoveForm = (() => {
         $('#emptyRow').empty();
         $('#btnRemove').addClass('ready');
         $('#queryingSignRemoveTab').slideToggle('slow');
+        $('#removeuserinput').removeClass('notReady');
 });
 
 module.exports.resetMyCompareForm = (() => {
@@ -49,6 +66,7 @@ module.exports.resetMyCompareForm = (() => {
     $('#userinputarea').slideToggle("slow");
     $('#emptyRow').empty();
     $('#btnCompare').addClass('ready');
+    $('#useroutputarea').addClass('hidden');
 });
 
 module.exports.compare_parseMatching = (groupName => {
@@ -81,7 +99,7 @@ module.exports.compare_parseListFinalStep = ((letUser1Output, letUser2Output) =>
     letUser1Output +='</ul>';
     letUser2Output +='</ul>';
     $('#user1').append(letUser1Output);
-    $('#user2').append(letUser2Output); 
+    $('#user2').append(letUser2Output);
     $('#emptyRow').empty(); //remove the prelaunch progressbar
     $('#queryingSign').toggleClass('hidden');
     $('#useroutputarea').slideToggle("slow", "swing");//spiffy animation

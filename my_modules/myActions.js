@@ -40,13 +40,11 @@ const validateMySingleUser = ((u1, userName) => {
     ps.addCommand(`./get-ADUser -u1 ${u1}`);
     ps.invoke()
     .then(output=>{
-        ps.dispose();
         const data=JSON.parse(output);
-        if(data[3].Value.ModuleFound ===false){$('#redMessageBar').html(`This program cannot check your effectice permissions without PowerShell Access Control Module.  Please reinstall the program as administrator.  You can download it from the internet and unzip it to C:\\Program Files\\WindowsPowerShell\\Modules but you will still need local admin to do that.`);return;};
-        if(data[2].Error.Message !== "No error"){
-           
+        if(data[2].Value.ModuleFound ===false){$('#redMessageBar').html(`This program cannot check your effectice permissions without PowerShell Access Control Module.  Please reinstall the program as administrator.  You can download it from the internet and unzip it to C:\\Program Files\\WindowsPowerShell\\Modules but you will still need local admin to do that.`);return;};
+        if(data[0].Error !== false){
            DOM.resetMyRemoveForm(); //error occurred, reset form
-           $('#redMessageBar').html(data[2].Error.Message); //report the error
+           $('#redMessageBar').html(data[0].Error.Message); //report the error
            return; //end the function
         }else{
             let names= {
@@ -56,6 +54,7 @@ const validateMySingleUser = ((u1, userName) => {
             };
             return listOfGroupsToRemove(names);
         }
+        ps.dispose();
     })
     .catch(err=>{
         ps.dispose();
@@ -80,10 +79,10 @@ const validateMyList = ((u1, u2, userName) => {
     .then(output=>{
         ps.dispose();
         const data=JSON.parse(output);
-        if(data[3].Value.ModuleFound ===false){$('#redMessageBar').html(`This program cannot check your effectice permissions without PowerShell Access Control Module.  Please reinstall the program as administrator.  You can download it from the internet and unzip it to C:\\Program Files\\WindowsPowerShell\\Modules but you will still need local admin to do that.`);return;};
-        if(data[2].Error.Message !== "No error"){
+        if(data[2].Value.ModuleFound ===false){$('#redMessageBar').html(`This program cannot check your effectice permissions without PowerShell Access Control Module.  Please reinstall the program as administrator.  You can download it from the internet and unzip it to C:\\Program Files\\WindowsPowerShell\\Modules but you will still need local admin to do that.`);return;};
+        if(data[0].Error !== false){
            DOM.resetMyCompareForm(); //error occurred, reset form
-           $('#redMessageBar').html(data[2].Error.Message); //report the error
+           $('#redMessageBar').html(data[0].Error.Message); //report the error
            return; //end the function
         }else{
                 let names= {
