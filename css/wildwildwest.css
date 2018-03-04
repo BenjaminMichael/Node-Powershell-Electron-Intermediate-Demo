@@ -61,7 +61,6 @@ main{
 .roundCorners{
   border-radius:35px;
 }
-
 .paddingLeft{
   padding-left:27%;
 }
@@ -80,7 +79,7 @@ main{
 .tabs .tab a:hover {
   background-color: tan!important;
   color:black!important;
-  font-size:.5em;
+  font-size:1em;
 }
 .tabs .tab a {
   color: #d7ccc8!important;
