@@ -1,10 +1,12 @@
-# My learning tutorial
+# Howdy Partner, this is AD Group Wrangler!
 ## based on [Xainey's PowerShell-Electron-Demo](https://github.com/Xainey/powershell-electron-demo)
 
-I wanted to take the PowerShell Electron concept a bit further and come up with a solution to a common problem presented by my coworker involving comparing AD groups of existing staff and new hires. (later a feature request was submitted by another colleague for the scenario where we remove AD group memberships after termination).
+This is a simple electron based app for wranglin' Active Directory Group memberships.  There are two workflows based on common tasks: Compare and Remove.
 
-To run this demo you will need the following installed:
-node,
-Windows PowerShell,
-you need to be on a Domain joined workstation that can communicate with a Domain Controller, and
-you will need [Powershell Access Control Module](https://gallery.technet.microsoft.com/scriptcenter/PowerShellAccessControl-d3be7b83) to be in one of your PS modules directories.
+It uses 2 PowerShell modules:
+
+[Powershell Access Control Module](https://gallery.technet.microsoft.com/scriptcenter/PowerShellAccessControl-d3be7b83)
+and
+PS Active Directory module.
+
+You also have to have network connectivity and be domain joined in order to talk to a Domain Controller.
