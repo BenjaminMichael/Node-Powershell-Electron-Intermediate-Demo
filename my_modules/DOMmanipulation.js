@@ -1,5 +1,5 @@
 const remote = require('electron').remote;
-const {clipboard} = require('electron')
+const {clipboard} = require('electron');
 
 
 const RESTART = () => {
@@ -26,7 +26,7 @@ module.exports.compareBtnClickedUpdateDOM = (() => {
     });
     $('#redMessageBar').empty();
     setTimeout(function(){
-        $('#queryingSign').removeClass('hidden');
+        $('#queryingSign').slideToggle("slow");
         $('#userinputarea').slideToggle("slow");
         $('#emptyRow').html(`<div class="row center">
                                 <div class="progress">
@@ -67,6 +67,7 @@ module.exports.resetMyCompareForm = (() => {
     $('#emptyRow').empty();
     $('#btnCompare').addClass('ready');
     $('#useroutputarea').addClass('hidden');
+    $('#queryingSign').slideToggle('slow');
 });
 
 module.exports.compare_parseMatching = (groupName => {
@@ -101,8 +102,8 @@ module.exports.compare_parseListFinalStep = ((letUser1Output, letUser2Output) =>
     $('#user1').append(letUser1Output);
     $('#user2').append(letUser2Output);
     $('#emptyRow').empty(); //remove the prelaunch progressbar
-    $('#queryingSign').toggleClass('hidden');
-    $('#useroutputarea').slideToggle("slow", "swing");//spiffy animation
+    setTimeout(function(){$('#queryingSign').slideToggle('slow','swing');},200);
+    setTimeout(function(){$('#useroutputarea').slideToggle("slow", "swing");},1500);
     $('.tooltipped').tooltip(); //dynamic tooltip reinitialization for our new HTML
 });
 
@@ -121,8 +122,8 @@ module.exports.compare_addADGroup_success = (data =>{
     });
 
 module.exports.compare_addADGroup_error = (data => {
-        $(`#copyGroupBtn${data[0].bind_i}`).addClass("amber").removeClass("green");
-        $('#redMessageBar').html(data[1]);  
+       // $(`#copyGroupBtn${data[0].bind_i}`).addClass("amber").removeClass("green");
+        $('#redMessageBar').html(data);
     });
 
 module.exports.compare_removeADGroup = (output => {
@@ -136,7 +137,7 @@ module.exports.compare_removeADGroup = (output => {
     return;
 });
 
-module.exports.remove_parseListOfGroups = ((groupNamesList, user1name) => {
+module.exports.remove_parseListOfGroups = ((groupNamesList, names) => {
     var htmlOutput = `<ul class="brown lighten-3" id="remGroupUL">`;
     groupNamesList.forEach((val, index) => {
         //to parse the group name out of the DN use val.split(",")[0].slice(3) 
@@ -159,7 +160,8 @@ module.exports.remove_parseListOfGroups = ((groupNamesList, user1name) => {
     $('#user1RemoveList').append(htmlOutput);
     $('#user1RemoveList, #hiddenUndoBtnRow').slideToggle("slow", "swing");
     $('#queryingSignRemoveTab').slideToggle('slow');
-    $('#remUserHeading').html(`<h4>${user1name}</h4>`);
+    $('#remUserHeading').append(`${names.user1Name}`);
+    $('#remUserSubHeading').append(`<div>${names.user1FName?names.user1FName:"-"}&nbsp;${names.user1LName?names.user1LName:"-"}</div>`);
     $('#removeRestartBtn').click(() => {
         RESTART();
     });

@@ -4,6 +4,8 @@ const CompareStore = require('./compareStore.js'); //redux datastore
 const {Set} = require('immutable');
 const DOM = require('./DOMmanipulation.js'); //I use this module for most of the times I need to manipulate the user interface 
 var Queue = require('better-queue');
+const ipcRenderer = require('electron').ipcRenderer;
+const log = (string) =>  ipcRenderer.send('log', string);
 
 
 module.exports.beginCompare = ((userName) => {
@@ -50,7 +52,9 @@ const validateMySingleUser = ((u1, userName) => {
             let names= {
                 'user1Name' : u1,
                 'user1DN' : (data[0].DN).toString(),
-                'currentUser' : userName
+                'currentUser' : userName,
+                'user1FName' : data[0].FName,
+                'user1LName' : data[0].LName
             };
             return listOfGroupsToRemove(names);
         }
@@ -77,7 +81,6 @@ const validateMyList = ((u1, u2, userName) => {
     ps.addCommand('./get-ADUser',[{u1:`"${u1}"`},{u2:`"${u2}"`}]);
     ps.invoke()
     .then(output=>{
-        ps.dispose();
         const data=JSON.parse(output);
         if(data[2].Value.ModuleFound ===false){$('#redMessageBar').html(`This program cannot check your effectice permissions without PowerShell Access Control Module.  Please reinstall the program as administrator.  You can download it from the internet and unzip it to C:\\Program Files\\WindowsPowerShell\\Modules but you will still need local admin to do that.`);return;};
         if(data[0].Error !== false){
@@ -90,12 +93,19 @@ const validateMyList = ((u1, u2, userName) => {
                     'user2Name' : u2,
                     'user1DN' : (data[0].DN).toString(),
                     'user2DN' : (data[1].DN).toString(),
-                    'currentUser' : userName
+                    'currentUser' : userName,
+                    'user1FName' : data[0].FName,
+                    'user1LName' : data[0].LName,
+                    'user2FName' : data[1].FName,
+                    'user2LName' : data[1].LName
                 };
-                $('#user1').append(`<h4 class="wildwestfontStriped brown-text text-darken-3">${names.user1Name}</h4>`);
-                $('#user2').append(`<h4 class="wildwestfontStriped brown-text text-darken-3" id="user2sName">${names.user2Name}</h4><ul class="blue darken-1"><span class="amber-text text-lighten-1">`);
-                $('#queryingSign').text(`Checking for ${u1} and ${u2}'s memberships`);
-                    return listOfGroupsToCompare(names);
+                $('#user1').append(`<h4 class="brown-text text-darken-3">${names.user1Name}</h4><h3 class="brown-text text-darken-3">${names.user1FName?names.user1FName:"-"}&nbsp;${names.user1LName?names.user1LName:"-"}</h3>`);
+                $('#user2').append(`<h4 class="brown-text text-darken-3" id="user2sName">${names.user2Name}</h4><h3 "brown-text text-darken-3">${names.user2FName?names.user2FName:"-"}&nbsp;${names.user2LName?names.user2LName:"-"}</h3><ul class="blue darken-1"><span class="amber-text text-lighten-1">`);
+               
+                $('#queryingSign').html(`Checking ${names.user1Name} and ${names.user2Name}<br><h3>${names.user1FName?names.user1FName:"-"}&nbsp;and&nbsp;${names.user2FName?names.user2FName:"-"}</h3>`);
+                
+                ps.dispose();
+                return listOfGroupsToCompare(names);
                      }
     })
     .catch(err=>{
@@ -133,8 +143,8 @@ const listOfGroupsToCompare = (names) => {
     ps.addCommand(`./get-adPrincipalGroups.ps1 -user1 '${names.user1DN}' -user2 '${names.user2DN}'`);
     ps.invoke()
     .then(output =>  {
-        ps.dispose();
         COMPARE(output, names);
+        ps.dispose();
     })
     .catch(err=>{
         $('#redMessageBar').html(err);
@@ -150,8 +160,8 @@ const listOfGroupsToRemove = (names) => {
     ps.addCommand(`./get-adPrincipalGroups.ps1 -user1 '${names.user1DN}'`);
     ps.invoke()
     .then(output =>  {
-        ps.dispose();
         REMOVE(output, names);
+        ps.dispose();
     })
     .catch(err=>{
         $('#redMessageBar').html(err);
@@ -176,9 +186,10 @@ const COMPARE = (outputfromPS, names) => {
         psxAsync.invoke()
         .then(output => {
             data = JSON.parse(output);
-            psxAsync.dispose();
+            log(`removed ${data[0].userDN} from ${data[0].groupDN}`);
             DOM.compare_removeADGroup(output);
             CompareStore.UNDOADD(data[0].bind_i);
+            psxAsync.dispose();
             cb(null, null);
         })
         .catch(err => { 
@@ -195,27 +206,32 @@ const COMPARE = (outputfromPS, names) => {
         psAsync.addCommand(`./add-adGroupMember.ps1 -user '${names.user2DN}' -group '${targetGroupName}' -i ${i}`);
         psAsync.invoke()
         .then(output => {
+            const data = JSON.parse(output);
+            DOM.compare_addADGroup_success(data);
+            CompareStore.ADD(data);
+            $(`#undoGroupBtn${data[0].bind_i}`).click(function(){
+                $(this).addClass('pulse disabled');
+               PSCommandQueue.push({type: 'remove', groupDN: data[0].groupDN, user2: data[0].userName, i: data[0].bind_i});
+            });
+            log(`added ${data[0].user} to ${data[0].groupDN}`);
             psAsync.dispose();
-            const data = JSON.parse(output);     
-            if(data[0].Result==="Success"){
-                DOM.compare_addADGroup_success(data);
-                CompareStore.ADD(data);
-                $(`#undoGroupBtn${data[0].bind_i}`).click(function(){
-                    $(this).addClass('pulse disabled');
-                    addRemoveADGroupQueue.push({type: 'remove', groupDN: data[0].groupDN, user2: data[0].userName, i: data[0].bind_i});
-                });
-            }else{
-                DOM.compare_addADGroup_error(data);
-            }
             cb(null, null);
         })
         .catch(err => { 
+                DOM.compare_addADGroup_error(err);
                 psAsync.dispose();
                 cb(null, null);
         });
     };
 
-    addRemoveADGroupQueue = new Queue(function (input, cb) {
+    const _chckEffectivePermissions = (groupDN, currentUser, i, cb) => {
+        $(`#LED-${i}`).addClass("led-yellow").removeClass("led-blue");
+        psChain.addCommand(`./get-effective-access.ps1 -adgroupdn '${groupDN}' -me ${currentUser} -i ${i}`);
+        psChain.invoke();
+        return cb(null, null);
+    };
+
+   PSCommandQueue = new Queue(function (input, cb) {
             switch(input.type){
                 case 'remove':
                 _removeADGroup(input.groupDN, input.user2, input.i, cb);
@@ -223,6 +239,9 @@ const COMPARE = (outputfromPS, names) => {
                 case 'add':
                 _addADGroup(input.targetGroupName, input.names, input.i, cb);
                 break;
+                case 'checkEffectivePermissions':
+                _chckEffectivePermissions(input.groupDN, input.currentUser, input.i, cb);
+            break;
             }
         });
 
@@ -262,12 +281,7 @@ const COMPARE = (outputfromPS, names) => {
         executionPolicy: 'Bypass',
         noProfile: true
         });
-    const doPowerShell = (i) => { 
-        $(`#LED-${i}`).addClass("led-yellow").removeClass("led-blue");
-        psChain.addCommand(`./get-effective-access.ps1 -adgroupdn '${myADGroupArray[i]}' -me ${names.currentUser} -i ${i}`);
-        psChain.invoke();
-        return;
-    };
+    
     psChain.on('output', output => {
         const data = JSON.parse(output);   
         if(!data.Result.includes("FullControl")){
@@ -279,15 +293,15 @@ const COMPARE = (outputfromPS, names) => {
             $(`#copyGroupBtn${data.bind_i}`).slideToggle("slow").click(function(){
                 //disable btn immediately so you cant spam it
                 $(this).addClass('disabled pulse').removeClass("green");
-                addRemoveADGroupQueue.push({type: 'add', targetGroupName : data.targetGroupName, names: names, i: data.bind_i});
+               PSCommandQueue.push({type: 'add', targetGroupName : data.targetGroupName, names: names, i: data.bind_i});
             });
         }
-        if (data.bind_i<max-1){let i = data.bind_i+1;return doPowerShell(i);}else{psChain.dispose();return;};
+        if (data.bind_i<max-1){let i = data.bind_i+1;return PSCommandQueue.push({type: 'checkEffectivePermissions', groupDN: myADGroupArray[i], currentUser: names.currentUser, i: i});}else{psChain.dispose();return;};
         psChain.on('err', err => {
             $('#redMessageBar').html(err);
         });
     });
-    if(max>0){doPowerShell(0);}else{return;};
+    if(max>0){PSCommandQueue.push({type: 'checkEffectivePermissions', groupDN: myADGroupArray[0], currentUser: names.currentUser, i: 0});}else{return;};
 };
 
 
@@ -303,19 +317,16 @@ const REMOVE = (outputfromPS, names) => {
             psReadd.addCommand(`./add-adGroupMember.ps1 -user '${names.user1DN}' -group '${groupDN}' -i ${i}`); //i doesnt matter
             psReadd.invoke()
             .then(output => {
-                psReadd.dispose();
                 const data = JSON.parse(output);
-                if(data[0].Result==="Success"){
-                    DOM.remove_readd(data);
-                    cb(null, null);
-                }else{
-                    $('#redMessageBar').html(data[1]);
-                    cb(null, null);
-                }   
+                log(`added ${data[0].user} to ${data[0].groupDN}`);
+                DOM.remove_readd(data);
+                psReadd.dispose();
+                cb(null, null); 
             })
             .catch((err) => {
-                cb(null, null);
+                $('#redMessageBar').html(err);
                 psReadd.dispose();
+                cb(null, null);
             });
         };
 
@@ -327,25 +338,28 @@ const REMOVE = (outputfromPS, names) => {
         psRem.addCommand(`./remove-adGroupMember.ps1 -user '${userDN}' -group '${groupDN}' -i ${i}`);
         psRem.invoke()
         .then(output => {
-            psRem.dispose();
             const data = JSON.parse(output);
-            if(data[0].Result==="Success"){
-                $(`#REM-Row-${data[0].bind_i}`).slideToggle('slow');
-                RemoveStore.REMEMBER(data[0].bind_i, data[0].groupDN);
-                cb(null, null);
-            }else{
-                $('#redMessageBar').html(data[1]);
-                cb(null, null);
-            }
+            log(`removed ${data[0].userDN} from ${data[0].groupDN}`);
+            $(`#REM-Row-${data[0].bind_i}`).slideToggle('slow');
+            RemoveStore.REMEMBER(data[0].bind_i, data[0].groupDN);
+            psRem.dispose();
+            cb(null, null);
         })
         .catch(err => {
+            $('#redMessageBar').html(err);
             psRem.dispose();
-            console.log(err);
             cb(null, null);
         });
     };
 
-    var readdOrRemoveADGroupQueue = new Queue(function (input, cb) {
+    const _checkEffectivePermissions = (groupDN, currentUser, i, cb) => {
+        $(`#REM-LED-${i}`).addClass("led-yellow").removeClass("led-blue");
+        psChain.addCommand(`./get-effective-access.ps1 -adgroupdn '${groupDN}' -me ${currentUser} -i ${i}`);
+        psChain.invoke();
+        return cb(null, null);
+    };
+
+    var removePSCommandQueue = new Queue(function (input, cb) {
         switch(input.type){
             case 'remove':
             _remGroup(input.groupDN, input.userDN, input.i, cb);
@@ -353,14 +367,17 @@ const REMOVE = (outputfromPS, names) => {
             case 'readd':
             _readdGroup(input.groupDN, input.i, cb);
             break;
+            case 'checkEffectivePermissions':
+            _checkEffectivePermissions(input.groupDN, input.currentUser, input.i, cb);
+            break;
         }
     });
 
     const groupNamesList =  RemoveStore.CREATE(outputfromPS, names.user1Name, names.currentUser);
-    DOM.remove_parseListOfGroups(groupNamesList, names.user1Name);
+    DOM.remove_parseListOfGroups(groupNamesList, names);
     $('#undoRemBtn').click(() => {
         $('#undoRemBtn').addClass('pulse disabled');
-        readdOrRemoveADGroupQueue.push(RemoveStore.UNDO());
+        removePSCommandQueue.push(RemoveStore.UNDO());
     });
 
     //iterate through all the groups to check effective access
@@ -369,12 +386,6 @@ const REMOVE = (outputfromPS, names) => {
         executionPolicy: 'Bypass',
         noProfile: true
     });
-    const doPowerShell = (i) => {
-        $(`#REM-LED-${i}`).addClass("led-yellow").removeClass("led-blue");
-        psChain.addCommand(`./get-effective-access.ps1 -adgroupdn '${groupNamesList[i]}' -me ${names.currentUser} -i ${i}`);
-        psChain.invoke();
-        return;
-    };
     psChain.on('output', output => {
         const data = JSON.parse(output);   
         if(!data.Result.includes("FullControl")){
@@ -386,13 +397,13 @@ const REMOVE = (outputfromPS, names) => {
             $(`#REM-ADGroupBtn${data.bind_i}`).slideToggle("slow").click(function(){
                 //disable btn immediately so you cant spam it
                 $(this).addClass('disabled pulse');
-                readdOrRemoveADGroupQueue.push({type: 'remove', groupDN: data.targetGroupName, userDN: names.user1DN, i: data.bind_i});
+                removePSCommandQueue.push({type: 'remove', groupDN: data.targetGroupName, userDN: names.user1DN, i: data.bind_i});
             });
         }
-        if (data.bind_i<max-1){let i = data.bind_i+1;return doPowerShell(i);}else{psChain.dispose();return;};
+        if (data.bind_i<max-1){let i = data.bind_i+1;return removePSCommandQueue.push({type: 'checkEffectivePermissions', groupDN: groupNamesList[i], currentUser: names.currentUser, i: i});}else{psChain.dispose();return;};
     });
     psChain.on('err', err => {
         $('#redMessageBar').html(err);
     });
-    if(max>0){doPowerShell(0);}else{return;};
+    if(max>0){removePSCommandQueue.push({type: 'checkEffectivePermissions', groupDN: groupNamesList[0], currentUser: names.currentUser, i: 0});}else{return;};
 };

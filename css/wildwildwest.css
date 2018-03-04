@@ -16,7 +16,6 @@ html,
   width:100vw;
   overflow:none;
 }
-
 main{
     flex: 1 0 auto;
 }
@@ -80,7 +79,7 @@ main{
 .tabs .tab a:hover {
   background-color: tan!important;
   color:black!important;
-  font-size:.5em;
+  font-size:1em;
 }
 .tabs .tab a {
   color: #d7ccc8!important;

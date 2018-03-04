@@ -31,11 +31,15 @@ try{
     $global:out+= Get-ADUser $u1 | Select-Object   @{Name='Name';     Expr='User1'},   
                                             @{Name='UserName'; Expr={$_.name}},
                                             @{Name='DN';       Expr={$_.distinguishedName}},
+                                            @{Name='FName'; Expr={$_.GivenName}},
+                                            @{Name='LName'; Expr={$_.Surname}},
                                             @{Name='Error';    Expr={$false}}
     if($PSBoundParameters.ContainsKey('u2')){
         $global:out+=  Get-ADUser $u2 | Select-Object  @{Name='Name';     Expr='User2'},
                                                 @{Name='UserName'; Expr={$_.name}},
-                                                @{Name='DN';       Expr={$_.distinguishedName}}
+                                                @{Name='DN';       Expr={$_.distinguishedName}},
+                                                @{Name='FName'; Expr={$_.GivenName}},
+                                                @{Name='LName'; Expr={$_.Surname}}
         }else{$global:out+=$null}
 }
 catch [System.Management.Automation.RuntimeException] {
