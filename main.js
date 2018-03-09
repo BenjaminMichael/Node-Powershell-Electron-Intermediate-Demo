@@ -7,7 +7,7 @@ const {app, Menu, dialog} = electron;
 
 
 var log = require('electron-log');
-
+log.transports.file.level=true;
 
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
@@ -20,6 +20,7 @@ const ipcMain = require('electron').ipcMain;
 ipcMain.on('log', function(event, arg){
   log.info(arg);
 });
+
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -59,6 +60,7 @@ function createMenu() {
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 1024, height: 768});
+  mainWindow.maximize();
   createMenu();
 
   // and load the index.html of the app.

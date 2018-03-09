@@ -1,12 +1,37 @@
 {
   "name": "ad-group-wrangler",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A couple of fun workflows",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "postinstall": "install-app-deps",
+    "start": "electron .",
+    "pack": "build --dir",
+    "dist": "build",
+    "package-win": "electron-packager . --overwrite --asar=true --platform=win32 --arch=x64 --icon=build/adgw.ico --prune=true --out=release-builds --version-string.CompanyName='Umich' --version-string.FileDescription='ADGroupWrangler' --version-string.ProductName='adgroupwrangler'"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/BenjaminMichael/Node-Powershell-Electron-Intermediate-Demo",
+  "build": {
+    "appId": "ad-group-wrangler",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "target": "NSIS",
+      "icon": "build/adgw.ico"
+    }
+  },
   "keywords": [
     "Electron",
     "quick",
@@ -18,12 +43,15 @@
   "author": "GitHub",
   "license": "MIT",
   "devDependencies": {
-    "babel-preset-es2015": "^6.24.1"
+    "babel-preset-es2015": "^6.24.1",
+    "electron": "^1.8.2",
+    "electron-builder": "^20.2.0",
+    "electron-installer-squirrel-windows": "^1.3.0"
   },
   "dependencies": {
     "better-queue": "^3.8.6",
-    "electron": "^1.7.11",
     "electron-log": "^2.2.14",
+    "electron-packager": "^11.1.0",
     "eslint": "^4.16.0",
     "immutable": "^3.8.2",
     "jquery": "^3.3.1",
