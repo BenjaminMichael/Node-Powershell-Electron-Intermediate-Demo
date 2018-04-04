@@ -2,6 +2,7 @@
 | params:
 | $user is the user object name
 | $group is the AD security group we want to add them to
+| $i is the key to bind us to the list of group and to the list of UI elements
 |
 | cmdlets:
 | Add-ADGroupMember
@@ -30,7 +31,7 @@ param (
 try{
     Add-ADGroupMember -Identity $group -Members $user
     $out += @{
-                Result = "Success"
+                Result = "Add-ADGroupMember Success"
                 bind_i = $i
                 groupName = $group.Split('=')[1].Split(',')[0]
                 groupDN = $group
@@ -41,6 +42,7 @@ try{
 }
 catch [System.Management.Automation.RuntimeException] {
     $myError = @{
+                Result = "Add-ADGroupMember Error"
                 Message = $_.Exception.Message
                 Type = $_.FullyQualifiedErrorID
             }

@@ -70,6 +70,16 @@ module.exports.CREATE = (user1UniqGroups, names) => {
     const myCurrentState = compareStore.getState();
     
     module.exports.ADD = (data) => {compareStore.dispatch(addUserToADGroup(data));};
+    module.exports.GETANYMISSED = () => {
+        let getCurrentState = compareStore.getState();
+        for (let i=0;i<(getCurrentState.adGroupsToCompare.size);i++){
+            if((getCurrentState.adGroupsToCompare.get(i)).fullControl === 'not yet known'){
+                console.log(getCurrentState.adGroupsToCompare.get(i));
+                return i;
+            }
+        }
+        return 'done';
+    };
     module.exports.UNDOADD = (bind_i) => {compareStore.dispatch(undoAddADGroup(bind_i));};
     module.exports.UPDATE = (bind_i, fullControl) => {compareStore.dispatch(updateADGroup(bind_i, fullControl));};
     compareStore.subscribe(() => {

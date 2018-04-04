@@ -22,6 +22,7 @@ $global:out=@()
 try{
     if($PSBoundParameters.ContainsKey('user2')){
         $global:out += @{
+            Result = "Get-ADPrincipalGroupMembership Success"
             user1sGroups=@()
             user1Name = $user1
             user2sGroups=@()
@@ -32,6 +33,7 @@ try{
         }
     }else{
         $global:out += @{
+            Result = "Get-ADPrincipalGroupMembership Success"
             user1sGroups=@()
             user1Name = $user1
             user2sGroups=""
@@ -44,6 +46,7 @@ try{
 }
 catch [System.Management.Automation.RuntimeException] {
     $myError = @{
+                Result = "Get-ADPrincipalGroupMembership Error"
                 Message = $_.Exception.Message
                 Type = $_.FullyQualifiedErrorID
             }

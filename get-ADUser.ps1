@@ -11,14 +11,10 @@
 | [Array]$out which contains:
 |  $out[0]: user 1's data
 |  $out[1]: user 2's data
-|  $out[2]: default error data
-|  $out[3]: {ModuleFound : True/False}
+|  $out[2]: {ModuleFound : True/False}
 |
-| or in the case of an error during the try/catch block the user data is left as 2 nulls:
-|  $out[0]: $null
-|  $out[1]: $null
-|  $out[2]: detailed error data
-|  $out[3]: {ModuleFound : True/False}
+| or in the case of an error during the try/catch block:
+|  $out[0]: Result, Message, and Type
 ------------------------------------------------------------------------------------------------#>
 param (
     [Parameter (Mandatory=$True,Position=0)]
@@ -33,7 +29,8 @@ try{
                                             @{Name='DN';       Expr={$_.distinguishedName}},
                                             @{Name='FName'; Expr={$_.GivenName}},
                                             @{Name='LName'; Expr={$_.Surname}},
-                                            @{Name='Error';    Expr={$false}}
+                                            @{Name='Error';    Expr={$false}},
+                                            @{Name='Result'; Expr={'Get-ADUser Success'}}
     if($PSBoundParameters.ContainsKey('u2')){
         $global:out+=  Get-ADUser $u2 | Select-Object  @{Name='Name';     Expr='User2'},
                                                 @{Name='UserName'; Expr={$_.name}},
@@ -45,6 +42,7 @@ try{
 catch [System.Management.Automation.RuntimeException] {
     $global:out=@()
     $myError = @{
+        Result = "Get-ADUser Error"
         Message = $_.Exception.Message
         Type = $_.FullyQualifiedErrorID
     }

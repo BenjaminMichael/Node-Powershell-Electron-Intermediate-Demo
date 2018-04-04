@@ -56,8 +56,8 @@ module.exports.resetMyRemoveForm = (() => {
         $('#removeuserinputarea').slideToggle("slow");
         $('#emptyRow').empty();
         $('#btnRemove').addClass('ready');
-        $('#queryingSignRemoveTab').slideToggle('slow');
-        $('#removeuserinput').removeClass('notReady');
+        $('#queryingSignRemoveTab').addClass('hidden');
+        $('#removeuserinputarea').removeClass('notReady');
 });
 
 module.exports.resetMyCompareForm = (() => {
@@ -130,7 +130,7 @@ module.exports.compare_removeADGroup = (output => {
     const data = JSON.parse(output);
     if(data[0].Result==="Success"){
         $(`#copyGroupBtn${data[0].bind_i}`).slideToggle('slow').removeClass('disabled').addClass('green').removeClass('pulse');
-        $(`#additionalGroup${data[0].bind_i}`).remove();
+        $(`#additionalGroup${data[0].bind_i}`).empty();
     }else{
         $('#redMessageBar').html(data[1]);
     }
@@ -159,7 +159,7 @@ module.exports.remove_parseListOfGroups = ((groupNamesList, names) => {
     $('#emptyRow').empty();
     $('#user1RemoveList').append(htmlOutput);
     $('#user1RemoveList, #hiddenUndoBtnRow').slideToggle("slow", "swing");
-    $('#queryingSignRemoveTab').slideToggle('slow');
+    setTimeout($('#queryingSignRemoveTab').slideToggle('slow'),200);
     $('#remUserHeading').append(`${names.user1Name}`);
     $('#remUserSubHeading').append(`<div>${names.user1FName?names.user1FName:"-"}&nbsp;${names.user1LName?names.user1LName:"-"}</div>`);
     $('#removeRestartBtn').click(() => {

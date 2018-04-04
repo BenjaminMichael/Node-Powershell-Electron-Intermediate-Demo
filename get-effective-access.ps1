@@ -7,14 +7,23 @@
     $i
     )
 
-
+try{
 $finalResult = (Get-EffectiveAccess $adgroupdn -Principal $me).EffectiveAccess
 $out = @()
-$out += @{  Result = $finalResult
+$out += @{  Result = 'Get-EffectiveAccess Success'
+            AccessData = $finalResult
             bind_i = $i
             targetGroupName = $adgroupdn
         }
-<#
-We called the PS Script with element[i] and the results will be bound to element[bind_i]
-#>
+    }
+    catch [System.Management.Automation.RuntimeException] {
+        $global:out=@()
+        $myError = @{
+            Result = "Get-EffectiveAccess Error"
+            Message = $_.Exception.Message
+            Type = $_.FullyQualifiedErrorID
+        }
+        $global:out += @{ Error = $myError }
+        $global:out+=$null
+        }
 $out | ConvertTo-Json | Out-Host
