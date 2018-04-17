@@ -24,7 +24,8 @@ switch(actions.type) {
     return {
         adGroupsToRemove: newADGroupsToRemove,
         undoHistory: state.undoHistory,
-        currentUser: state.CurrentUser
+        currentUser: state.CurrentUser,
+        user1Name: state.user1Name
     };
     break;
     case 'REMEMBER':
@@ -40,8 +41,12 @@ switch(actions.type) {
         return {
             adGroupsToRemove: newADGroupList,
             undoHistory: newUndoHistory,
-            currentUser: state.currentUser
+            currentUser: state.currentUser,
+            user1Name: state.user1Name
         };
+    break;
+    case 'SAVENAMES':
+
     break;
     case 'UNDO':
     const {undo_i, dn} = state.undoHistory.first();
@@ -57,7 +62,8 @@ switch(actions.type) {
     return {
         adGroupsToRemove: postUndoADGroupList,
         undoHistory: postUndoHistory,
-        currentUser: state.currentUser
+        currentUser: state.currentUser,
+        user1Name: state.user1Name
     };
     break;
     default: return state;
@@ -69,6 +75,13 @@ module.exports.CREATE = (adGroupDNsToRem, user1Name, currentUser) => {
             type: 'REMEMBER',
             bind_i: bind_i,
             dn: dn
+        };
+    }
+    function saveNames(user1Name, currentXXUser){
+        return {
+            type:'SAVENAMES',
+            user1Name: user1Name,
+            currentXXUser: currentXXUser
         };
     }
     function undoLastADGroup(){
@@ -83,9 +96,9 @@ module.exports.CREATE = (adGroupDNsToRem, user1Name, currentUser) => {
             fullControl: fullControl
         };
     }
-    data = JSON.parse(adGroupDNsToRem);
+    
     const  user1GroupsPlusParameters = [];
-    data.user1sGroups.forEach(x => {
+    adGroupDNsToRem.forEach(x => {
         user1GroupsPlusParameters.push({removed: false, fullControl: "not yet known", dn: x});
     });
     const initialState = {
@@ -95,13 +108,24 @@ module.exports.CREATE = (adGroupDNsToRem, user1Name, currentUser) => {
         user1Name: user1Name
     };
     const store = Redux.createStore(removeReducer, initialState);
+    module.exports.GETANYMISSED = () => {
+        console.log("debug1: Queue drained.");
+        let getCurrentState = store.getState();
+        for (let i=0;i<(getCurrentState.adGroupsToRemove.size);i++){
+            if((getCurrentState.adGroupsToRemove.get(i)).fullControl === 'not yet known'){
+                return {groupDN:(getCurrentState.adGroupsToRemove.get(i)).dn,i:i};
+            }
+        }
+        return 'done';
+    };
     module.exports.REMEMBER = (i, dn) => {store.dispatch(rememberADGroup(i, dn));};
     
     module.exports.UNDO = () => {
         const myUndoState = store.getState();
         const myFirstInQueue = myUndoState.undoHistory.first();
         store.dispatch(undoLastADGroup());
-        return {type: 'readd', groupDN: myFirstInQueue.dn, i: myFirstInQueue.undo_i}; //note: type here is not a Redux action type its a better-queue function type
+        
+        return { workflow: "Remove", step: 'add-ADGroupMember', payload: {targetGroupName: myFirstInQueue.dn, targetUserDN: myUndoState.user1Name, i: myFirstInQueue.undo_i}};
     };
     
     module.exports.UPDATE = (bind_i, fullControl) => {store.dispatch(updateADGroup(bind_i, fullControl));};
@@ -123,7 +147,7 @@ store.subscribe(() => {
         });
         const myHTML = `I removed ${$('#remUserHeading').text()} from the following AD Groups:<br>${removedGroups}<br>I didn't have access to remove them from:<br>${cantEditGroups}`;
         myElement.append(myHTML);
-
+        console.log(myCurrentState.undoHistory);
         if (myCurrentState.undoHistory.count()>0){
             $('#undoRemBtn').removeClass('disabled');
         }else{
@@ -131,5 +155,5 @@ store.subscribe(() => {
         }
 });
 
-    return data.user1sGroups;
+    return adGroupDNsToRem;
 };

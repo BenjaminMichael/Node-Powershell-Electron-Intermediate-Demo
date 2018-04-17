@@ -74,8 +74,7 @@ module.exports.CREATE = (user1UniqGroups, names) => {
         let getCurrentState = compareStore.getState();
         for (let i=0;i<(getCurrentState.adGroupsToCompare.size);i++){
             if((getCurrentState.adGroupsToCompare.get(i)).fullControl === 'not yet known'){
-                console.log(getCurrentState.adGroupsToCompare.get(i));
-                return i;
+                return {groupDN: (getCurrentState.adGroupsToCompare.get(i)).dn,i:i};
             }
         }
         return 'done';

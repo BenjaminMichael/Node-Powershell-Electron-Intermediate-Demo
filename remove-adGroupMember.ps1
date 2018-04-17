@@ -22,15 +22,19 @@ param (
     [Parameter (Mandatory=$True,Position=1)]
     [String]$group,
     [Parameter (Mandatory=$True,Position=2)]
-    $i
+    $i,
+    [Parameter (Mandatory=$True,Position=3)]
+    [String]$workflow
     )
 
     $out=@()
+    [string]$myResult
+    if($workflow -eq "Remove"){$myResult="Remove-ADGroupMember Remove"}else{$myResult="Remove-ADGroupMember Compare"}
 
 try{
     Remove-ADGroupMember -Identity $group -Members $user -Confirm:$false
     $out += @{
-                Result = "Success"
+                Result = $myResult
                 bind_i = $i
                 groupName = $group.Split('=')[1].Split(',')[0]
                 groupDN = $group
@@ -45,5 +49,5 @@ catch [System.Management.Automation.RuntimeException] {
             }
     $out += @{ Error = $myError }
 }
-
+$out+=@{null = $null}
 ConvertTo-Json $out -Compress

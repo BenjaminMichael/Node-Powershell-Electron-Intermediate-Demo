@@ -1,29 +1,45 @@
 ﻿param (
     [Parameter (Mandatory=$True,Position=0)]
-    [string]$adgroupdn,
+    [String]$adgroupdn,
     [Parameter (Mandatory=$True,Position=1)]
-    [string]$me,
+    [String]$me,
     [Parameter (Mandatory=$True,Position=2)]
-    $i
+    $i,
+    [Parameter (Mandatory=$True,Position=3)]
+    [String]$workflow,
+    [Parameter (Mandatory=$False,Position=4)]
+    [String]$targetUserDN
     )
+
+
+    [string]$myResult
+
+    if($workflow -eq "Remove"){
+        $myResult="Get-EffectiveAccess Remove"
+    }else{
+        $myResult="Get-EffectiveAccess Compare"
+    }
 
 try{
 $finalResult = (Get-EffectiveAccess $adgroupdn -Principal $me).EffectiveAccess
 $out = @()
-$out += @{  Result = 'Get-EffectiveAccess Success'
+
+$out += @{  Result = "$($myResult)"
             AccessData = $finalResult
             bind_i = $i
             targetGroupName = $adgroupdn
+            targetUserDN = $targetUserDN
         }
     }
     catch [System.Management.Automation.RuntimeException] {
         $global:out=@()
         $myError = @{
-            Result = "Get-EffectiveAccess Error"
+            Result = "$($myResult) Error"
             Message = $_.Exception.Message
             Type = $_.FullyQualifiedErrorID
         }
         $global:out += @{ Error = $myError }
         $global:out+=$null
         }
+$out += @{null = $null}
 $out | ConvertTo-Json | Out-Host

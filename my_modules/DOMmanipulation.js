@@ -121,23 +121,14 @@ module.exports.compare_addADGroup_success = (data =>{
         `);
     });
 
-module.exports.compare_addADGroup_error = (data => {
-       // $(`#copyGroupBtn${data[0].bind_i}`).addClass("amber").removeClass("green");
-        $('#redMessageBar').html(data);
-    });
-
-module.exports.compare_removeADGroup = (output => {
-    const data = JSON.parse(output);
-    if(data[0].Result==="Success"){
-        $(`#copyGroupBtn${data[0].bind_i}`).slideToggle('slow').removeClass('disabled').addClass('green').removeClass('pulse');
-        $(`#additionalGroup${data[0].bind_i}`).empty();
-    }else{
-        $('#redMessageBar').html(data[1]);
-    }
+module.exports.compare_removeADGroup = (bind_i => {
+        $(`#copyGroupBtn${bind_i}`).slideToggle('slow').removeClass('disabled').addClass('green').removeClass('pulse');
+        $(`#additionalGroup${bind_i}`).remove();
     return;
 });
 
-module.exports.remove_parseListOfGroups = ((groupNamesList, names) => {
+module.exports.remove_parseListOfGroups = ((groupNamesList, user1Name, user1FName, user1LName) => {
+    let user1ShortName = user1Name.split(",")[0].slice(3);
     var htmlOutput = `<ul class="brown lighten-3" id="remGroupUL">`;
     groupNamesList.forEach((val, index) => {
         //to parse the group name out of the DN use val.split(",")[0].slice(3) 
@@ -160,15 +151,15 @@ module.exports.remove_parseListOfGroups = ((groupNamesList, names) => {
     $('#user1RemoveList').append(htmlOutput);
     $('#user1RemoveList, #hiddenUndoBtnRow').slideToggle("slow", "swing");
     setTimeout($('#queryingSignRemoveTab').slideToggle('slow'),200);
-    $('#remUserHeading').append(`${names.user1Name}`);
-    $('#remUserSubHeading').append(`<div>${names.user1FName?names.user1FName:"-"}&nbsp;${names.user1LName?names.user1LName:"-"}</div>`);
+    $('#remUserHeading').append(`${user1ShortName}`);
+    $('#remUserSubHeading').append(`<div>${user1FName?user1FName:"-"}&nbsp;${user1LName?user1LName:"-"}</div>`);
     $('#removeRestartBtn').click(() => {
         RESTART();
     });
 });
 
-module.exports.remove_readd = ((data) => {
-    $(`#REM-Row-${data[0].bind_i}`).slideToggle('slow');
-    $(`#REM-ADGroupBtn${data[0].bind_i}`).removeClass('disabled pulse');
+module.exports.remove_readd = ((i) => {
+    $(`#REM-Row-${i}`).slideToggle('slow');
+    $(`#REM-ADGroupBtn${i}`).removeClass('disabled pulse');
     $('#undoRemBtn').removeClass('pulse');
 });
