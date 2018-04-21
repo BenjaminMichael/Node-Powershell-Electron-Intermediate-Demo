@@ -8,7 +8,8 @@
     "start": "electron .",
     "pack": "build --dir",
     "dist": "build",
-    "package-win": "electron-packager . --overwrite --asar=true --platform=win32 --arch=x64 --icon=build/adgw.ico --prune=true --out=release-builds --version-string.CompanyName='Umich' --version-string.FileDescription='ADGroupWrangler' --version-string.ProductName='adgroupwrangler'"
+    "package-win": "electron-packager . --overwrite --asar=true --platform=win32 --arch=x64 --icon=build/adgw.ico --prune=true --out=release-builds --version-string.CompanyName='ben' --version-string.FileDescription='ADGroupWrangler' --version-string.ProductName='adgroupwrangler'",
+    "post-package-win": "gulp"
   },
   "repository": "https://github.com/BenjaminMichael/Node-Powershell-Electron-Intermediate-Demo",
   "build": {
@@ -28,6 +29,9 @@
       ]
     },
     "win": {
+      "files": [
+        "!scripts/*"
+      ],
       "target": "NSIS",
       "icon": "build/adgw.ico"
     }
@@ -44,7 +48,8 @@
   "license": "MIT",
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1",
-    "electron": "^1.8.3"
+    "electron": "^1.8.3",
+    "gulp": "^3.9.1"
   },
   "dependencies": {
     "better-queue": "^3.8.6",

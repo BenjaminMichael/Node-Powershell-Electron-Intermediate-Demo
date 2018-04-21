@@ -15,27 +15,26 @@ const doPowerShell = (input, cb) => {
         case "Remove":
         switch(step){
             case "get-ADUser":
-            ps.addCommand(`./get-ADUser -u1 ${payload.user1Name} -cu ${payload.currentUser}`);
+            ps.addCommand(`./scripts/get-ADUser -u1 ${payload.user1Name} -cu ${payload.currentUser}`);
             ps.invoke().then(output => cb(null, null));
             break;
             case "get-adPrincipalGroups":
-            ps.addCommand(`./get-adPrincipalGroups.ps1 -user1 '${payload.user1DN}' -cu '${payload.currentUser}' -user1FName ${payload.FName} -user1LName ${payload.LName}`);
+            ps.addCommand(`./scripts/get-adPrincipalGroups.ps1 -user1 '${payload.user1DN}' -cu '${payload.currentUser}' -user1FName ${payload.FName} -user1LName ${payload.LName}`);
             ps.invoke().then(output => cb(null, null));
             break;
             case "add-ADGroupMember":
-            ps.addCommand(`./add-adGroupMember.ps1 -user '${payload.targetUserDN}' -group '${payload.targetGroupName}' -i ${payload.i} -workflow ${workflow}`);
+            ps.addCommand(`./scripts/add-adGroupMember.ps1 -user '${payload.targetUserDN}' -group '${payload.targetGroupName}' -i ${payload.i} -workflow ${workflow}`);
             ps.invoke().then(output => cb(null, null));
             break;
             case "remove-ADGroupMember":
-            ps.addCommand(`./remove-adGroupMember.ps1 -user '${payload.targetUserDN}' -group '${payload.targetGroupName}' -i ${payload.i} -workflow ${workflow}`);
+            ps.addCommand(`./scripts/remove-adGroupMember.ps1 -user '${payload.targetUserDN}' -group '${payload.targetGroupName}' -i ${payload.i} -workflow ${workflow}`);
             ps.invoke().then(output => cb(null, null));
             break;
             case "get-EffectiveAccess":
-            console.log(payload);
             let targetElement = $(`#REM-LED-${payload.i}`);
             if (targetElement.hasClass('led-green') || targetElement.hasClass('led-red')) { return cb(null, null); } else {
                 targetElement.addClass("led-yellow").removeClass("led-blue");
-                ps.addCommand(`./get-effective-access.ps1 -adgroupdn '${payload.groupDN}' -me ${payload.currentUser} -i ${payload.i} -workflow ${workflow} -targetUserDN '${payload.targetUserDN}'`);
+                ps.addCommand(`./scripts/get-effective-access.ps1 -adgroupdn '${payload.groupDN}' -i ${payload.i} -workflow ${workflow} -targetUserDN '${payload.targetUserDN}'`);
                 ps.invoke().then(output => cb(null, null));
             }
             break;
@@ -44,19 +43,19 @@ const doPowerShell = (input, cb) => {
         case "Compare":
         switch(step){
             case "get-ADUser":
-            ps.addCommand(`./get-ADUser -u1 ${payload.user1Name} -cu ${payload.currentUser} -u2 ${payload.user2Name}`);
+            ps.addCommand(`./scripts/get-ADUser -u1 ${payload.user1Name} -cu ${payload.currentUser} -u2 ${payload.user2Name}`);
             ps.invoke();
             break;
             case "get-adPrincipalGroups":
-            ps.addCommand(`./get-adPrincipalGroups.ps1 -user1 '${payload.user1DN}' -cu '${payload.currentUser}' -user2 '${payload.user2DN}'`);
+            ps.addCommand(`./scripts/get-adPrincipalGroups.ps1 -user1 '${payload.user1DN}' -cu '${payload.currentUser}' -user2 '${payload.user2DN}'`);
             ps.invoke();
             break;
             case "add-ADGroupMember":
-            ps.addCommand(`./add-adGroupMember.ps1 -user '${payload.targetUserDN}' -group '${payload.targetGroupName}' -i ${payload.i} -workflow ${workflow}`);
+            ps.addCommand(`./scripts/add-adGroupMember.ps1 -user '${payload.targetUserDN}' -group '${payload.targetGroupName}' -i ${payload.i} -workflow ${workflow}`);
             ps.invoke().then(output => cb(null, null));
             break;
             case "remove-ADGroupMember":
-            ps.addCommand(`./remove-adGroupMember.ps1 -user '${payload.targetUserDN}' -group '${payload.targetGroupName}' -i ${payload.i} -workflow ${workflow}`);
+            ps.addCommand(`./scripts/remove-adGroupMember.ps1 -user '${payload.targetUserDN}' -group '${payload.targetGroupName}' -i ${payload.i} -workflow ${workflow}`);
             ps.invoke().then(output => cb(null, null));
             break;
             case "get-EffectiveAccess":
@@ -64,7 +63,7 @@ const doPowerShell = (input, cb) => {
             let thatLEDElement = $(`#LED-${payload.i}`);
             if (thatLEDElement.hasClass('led-green') || thatLEDElement.hasClass('led-red')) { return cb(null, null); } else {
                 $(`#LED-${payload.i}`).addClass("led-yellow").removeClass("led-blue");
-                ps.addCommand(`./get-effective-access.ps1 -adgroupdn '${payload.groupDN}' -me ${payload.currentUser} -i ${payload.i} -workflow ${workflow} -targetUserDN '${payload.targetUserDN}'`);
+                ps.addCommand(`./scripts/get-effective-access.ps1 -adgroupdn '${payload.groupDN}' -i ${payload.i} -workflow ${workflow} -targetUserDN '${payload.targetUserDN}'`);
                 ps.invoke().then(output => cb(null, null));
             }
             break;

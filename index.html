@@ -45,6 +45,10 @@
   src: url('./fonts/RioGrande Striped.ttf');
 }
 @font-face {
+  font-family:'Arcade' ;
+  src: url('./fonts/PressStart2P-Regular.ttf');
+}
+@font-face {
   font-family: 'Roboto';
   src: url("./node_modules/materialize-css/dist/fonts/roboto/Roboto-Bold.woff");
 }
@@ -64,6 +68,10 @@ h1{
 h3{
   font-family: 'Lato';
   font-size:2em;
+}
+.arcadeText{
+  font-size: 1.2em;
+  font-family: 'Arcade';
 }
 .welcomeText{
   font-size: 2em;
@@ -202,31 +210,32 @@ input[type=text]:focus{
     <!--Welcome Tab -->
     <div id="welcomeTab" class="myTabs row woodSign dark-primary-color">
       <div class="customPadding row">
-        <div class="carousel carousel-slider welcomeText" data-indicators="true">
+        <div class="carousel carousel-slider arcadeText" data-indicators="true">
           <div class="carousel-item wooden orange-text text-accent-2" href="#one!">     
-            <h1>(AD Group Wrangler)</h1> Click on a workflow to <span class="brown darken-3 white-text roundCorners z-depth-1">&nbsp;&nbsp;Compare&nbsp;&nbsp;</span> one user to another or <span class="brown darken-3 white-text roundCorners z-depth-1">&nbsp;&nbsp;Remove&nbsp;&nbsp;</span> a user from some AD Groups.
+            <h1 class="center">(AD Group Wrangler)</h1>
+            Click on a workflow to <span class="brown darken-3 white-text roundCorners z-depth-1">&nbsp;&nbsp;Compare&nbsp;&nbsp;</span> one user to another or <span class="brown darken-3 white-text roundCorners z-depth-1">&nbsp;&nbsp;Remove&nbsp;&nbsp;</span> a user from some AD Groups.
             <br>
           </div>
           <div class="carousel-item wooden orange-text text-accent-2" href="#two!">
             <p class="orange-text text-accent-1">
               <ul>
                 <li class="row">
-                  <div class="led-red col"></div><p class="col orange-text text-accent-1 paragraphRow">Red lights indicate you do not have access to add/remove a group.</p>
+                  <div class="led-red col"></div><p class="col orange-text arcadeText text-accent-1 paragraphRow">Red means you cannot add/remove members.</p>
                 </li>
                 <li class="row">
-                  <div class="led-blue col"></div><p class="col orange-text text-accent-1 paragraphRow">Blue lights indicate groups that are queued to have your Effect Access checked.</p>
+                  <div class="led-blue col"></div><p class="col orange-text arcadeText text-accent-1 paragraphRow">Blue groups are queued.</p>
                 </li>
                 <li class="row">
-                  <div class="led-yellow col"></div><p class="col orange-text text-accent-1 paragraphRow">The yellow light indicates the group currently being checked against your permissions.</p>
+                  <div class="led-yellow col"></div><p class="col orange-text arcadeText text-accent-1 paragraphRow">Yellow groups are being checked.</p>
                 </li>
               </ul>
             </p>
           </div>
           <div class="carousel-item wooden orange-text text-accent-2" href="#three!">
             <div class="row"><br>
-              <div class="led-green col"></div><p class="col orange-text text-accent-1">Green means you have access to add or remove AD Group members.</p><br>
+              <div class="led-green col"></div><p class="col orange-text text-accent-1 arcadeText">Green means you have access to add or remove AD Group members.</p><br>
             </div>
-            <h2>Clicking add/remove a group will make the change in Active Directory</h2>
+            <h2 class="arcadeText">Clicking add/remove a group will make the change in Active Directory</h2>
             <div class="center btn-floating btn-large waves-effect waves-light green white-text lighten-1 z-depth-2">
               <i class="material-icons large">add</i>
             </div>   
@@ -254,7 +263,7 @@ input[type=text]:focus{
             </div>
           </div>
         </div>
-        <div id="queryingSign" class="hidden topMargin row wood-color center z-depth-2  primary-text-color wildwestfont">querying Active Directory...</div>
+        <div id="queryingSign" class="hidden topMargin row wood-color center z-depth-2  primary-text-color arcadeText">querying Active Directory...</div>
           <div class="white-text hidden" id="useroutputarea">
             <div class="row">
               <div class="row brown-text text-darken-3" id="compareOptionButtons">
