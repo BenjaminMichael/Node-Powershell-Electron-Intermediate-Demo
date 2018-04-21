@@ -30,7 +30,8 @@
     },
     "win": {
       "files": [
-        "!scripts/*"
+        "!scripts/*",
+        "!node_modules/"
       ],
       "target": "NSIS",
       "icon": "build/adgw.ico"
@@ -49,12 +50,12 @@
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1",
     "electron": "^1.8.3",
+    "electron-packager": "^12.0.1",
     "gulp": "^3.9.1"
   },
   "dependencies": {
     "better-queue": "^3.8.6",
     "electron-log": "^2.2.14",
-    "electron-packager": "^11.1.0",
     "eslint": "^4.18.2",
     "immutable": "^3.8.2",
     "jquery": "^3.3.1",
