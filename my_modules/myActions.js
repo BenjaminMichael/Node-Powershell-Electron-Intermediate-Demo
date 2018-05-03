@@ -44,7 +44,7 @@ const doPowerShell = (input, cb) => {
         switch(step){
             case "get-ADUser":
             ps.addCommand(`./scripts/get-ADUser -u1 ${payload.user1Name} -cu ${payload.currentUser} -u2 ${payload.user2Name}`);
-            ps.invoke();
+            ps.invoke().then(output => cb(null, null));
             break;
             case "get-adPrincipalGroups":
             ps.addCommand(`./scripts/get-adPrincipalGroups.ps1 -user1 '${payload.user1DN}' -cu '${payload.currentUser}' -user2 '${payload.user2DN}'`);
@@ -59,7 +59,6 @@ const doPowerShell = (input, cb) => {
             ps.invoke().then(output => cb(null, null));
             break;
             case "get-EffectiveAccess":
-            console.log(payload);
             let thatLEDElement = $(`#LED-${payload.i}`);
             if (thatLEDElement.hasClass('led-green') || thatLEDElement.hasClass('led-red')) { return cb(null, null); } else {
                 $(`#LED-${payload.i}`).addClass("led-yellow").removeClass("led-blue");
@@ -75,17 +74,17 @@ const doPowerShell = (input, cb) => {
 
 PSQueue = new Queue(function (input, cb) {
     doPowerShell(input, cb);
-}, {afterProcessDelay: 200, maxTimeout: 25000, batchSize: 1});
+}, {afterProcessDelay: 10, maxTimeout: 25000, batchSize: 1});
 
 const evaluatePSOutput = (data) => {
     switch(data[0].Result){
         case "Get-ADUser Remove Error":
             DOM.resetMyRemoveForm(); //error occurred, reset form
-            $('#redMessageBar').html(data[0].Message);
+            $('#redMessageBar').html(data[0].Error.Message);
         break;
         case "Get-ADUser Compare Error":
             DOM.resetMyCompareForm(); //error occurred, reset form
-            $('#redMessageBar').html(data[0].Message);
+            $('#redMessageBar').html(data[0].Error.Message);
         break;
         case "Get-ADUser Compare":
             if (data[2].Value.ModuleFound === false) { $('#redMessageBar').html(`This program cannot check your effectice permissions without PowerShell Access Control Module.  Please reinstall the program as administrator.  You can download it from the internet and unzip it to C:\\Program Files\\WindowsPowerShell\\Modules but you will still need local admin to do that.`); return; };
@@ -94,21 +93,12 @@ const evaluatePSOutput = (data) => {
                 $('#redMessageBar').html(data[0].Error.Message); //report the error
                 return; //end the function
             } else {
-                let names = {
-                    'user1Name': data[0].UserName,
-                    'user2Name': data[1].UserName,
-                    'user1DN': (data[0].DN).toString(),
-                    'user2DN': (data[1].DN).toString(),
-                    'user1FName': data[0].FName,
-                    'user1LName': data[0].LName,
-                    'user2FName': data[1].FName,
-                    'user2LName': data[1].LName
-                };
-                $('#user1').append(`<h4 class="brown-text text-darken-3">${names.user1Name}</h4><h3 class="brown-text text-darken-3">${names.user1FName ? names.user1FName : "-"}&nbsp;${names.user1LName ? names.user1LName : "-"}</h3>`);
-                $('#user2').append(`<h4 class="brown-text text-darken-3" id="user2sName">${names.user2Name}</h4><h3 "brown-text text-darken-3">${names.user2FName ? names.user2FName : "-"}&nbsp;${names.user2LName ? names.user2LName : "-"}</h3><ul class="blue darken-1"><span class="amber-text text-lighten-1">`);
-                $('#queryingSign').html(`Checking ${names.user1Name} and ${names.user2Name}<br><h3>${names.user1FName ? names.user1FName : "-"}&nbsp;and&nbsp;${names.user2FName ? names.user2FName : "-"}</h3>`);
-
-                PSQueue.push({workflow: 'Compare', step: 'get-adPrincipalGroups', payload: {currentUser: data[0].CurrentUser, user1DN: names.user1DN, user2DN: names.user2DN}});
+                $('#user1').append(`<h4 class="brown-text text-darken-3">${data[0].UserName}</h4><h3 class="brown-text text-darken-3">${data[0].FName ? data[0].FName : "-"}&nbsp;${data[0].LName ? data[0].LName : "-"}</h3>`);
+                $('#user2').append(`<h4 class="brown-text text-darken-3" id="user2sName">${data[1].UserName}</h4><h3 "brown-text text-darken-3">${data[1].FName ? data[1].FName : "-"}&nbsp;${data[1].LName ? data[1].LName : "-"}</h3><ul class="blue darken-1"><span class="amber-text text-lighten-1">`);
+                $('#queryingSign').html(`Checking ${data[0].UserName} and ${data[1].UserName}<br><h3>${data[0].FName ? data[0].FName : "-"}&nbsp;and&nbsp;${data[1].FName ? data[1].FName : "-"}</h3>`);
+                //this line is slowing down my program why?  gc?
+                doPowerShell({workflow: 'Compare', step: 'get-adPrincipalGroups', payload: {currentUser: data[0].CurrentUser, user1DN: data[0].DN.toString(), user2DN: data[1].DN.toString()}});
+                
             }
         break;
         case "Get-ADUser Remove":
@@ -140,7 +130,6 @@ const evaluatePSOutput = (data) => {
             const user2UniqGroups = user2.subtract(matchingGroups);
             const myADGroupArray = [...user1UniqGroups];
             CompareStore.CREATE(user1UniqGroups, data[0].user1Name, data[0].currentUser);
-
             let letUser1Output = `<ul>`;
             myADGroupArray.forEach((value, index) => {
                 letUser1Output += DOM.compare_parseUser1Unique(value, index);
@@ -271,7 +260,6 @@ module.exports.beginRemove = ((userName) => {
 
 const COMPARE = (myADGroupArray, currentUser, targetUser2DN) => {
     PSQueue.on('drain', function (result) {
-        console.log('debug PSQUEUE DRAINED: ' + result);
         //on "drain" determine if there were any that timed out
 
             let missedGroup = CompareStore.GETANYMISSED();//this just returns the i value for the first group that hasnt had effective access verified
@@ -293,7 +281,6 @@ const COMPARE = (myADGroupArray, currentUser, targetUser2DN) => {
 
 const REMOVE = (groupNamesList, currentUser, targetUserDN) => {
     PSQueue.on('drain', function (result) {
-        console.log('debug PSQUEUE DRAINED: ' + result);
         //on "drain" determine if there were any that timed out
             let missedGrouptoo = RemoveStore.GETANYMISSED();//this just returns the i value for the first group that hasnt had effective access verified
             if (missedGrouptoo === 'done') {

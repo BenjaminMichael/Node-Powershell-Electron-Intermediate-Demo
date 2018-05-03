@@ -28,7 +28,7 @@ param (
     $global:out=@()
     
 try{
-    $global:out+= Get-ADUser $u1 | Select-Object   @{Name='Name';     Expr='User1'},   
+    $global:out+= Get-ADUser $u1 | Select-Object   @{Name='Name';     Expr={'User1'}},   
                                             @{Name='UserName'; Expr={$_.name}},
                                             @{Name='DN';       Expr={$_.distinguishedName}},
                                             @{Name='FName'; Expr={$_.GivenName}},
@@ -37,7 +37,7 @@ try{
                                             @{Name='Result'; Expr={'Get-ADUser Remove'}},
                                             @{Name='CurrentUser'; Expr={$cu}}
     if($PSBoundParameters.ContainsKey('u2')){
-        $global:out+=  Get-ADUser $u2 | Select-Object  @{Name='Name';     Expr='User2'},
+        $global:out+=  Get-ADUser $u2 | Select-Object  @{Name='Name';     Expr={'User2'}},
                                                 @{Name='UserName'; Expr={$_.name}},
                                                 @{Name='DN';       Expr={$_.distinguishedName}},
                                                 @{Name='FName'; Expr={$_.GivenName}},
@@ -48,12 +48,13 @@ try{
 catch [System.Management.Automation.RuntimeException] {
     $global:out=@()
     $myError = @{
-        Result = "Get-ADUser Remove Error"
         Message = $_.Exception.Message
         Type = $_.FullyQualifiedErrorID
     }
-    if($PSBoundParameters.ContainsKey('u2')){$myError.Result ="Get-ADUser Compare Error"}
-    $global:out += @{ Error = $myError }
+    [String]$myResult
+    if($PSBoundParameters.ContainsKey('u2')){$myResult ="Get-ADUser Compare Error"}else{$myResult="Get-ADUser Remove Error"}
+    $global:out += @{ Error = $myError
+                        Result = $myResult }
     $global:out+=$null
     }
 
