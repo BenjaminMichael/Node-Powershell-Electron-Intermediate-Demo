@@ -1,10 +1,9 @@
 "use strict";
-
+//the following code is invluable optimization for using require()
+//if you dont cache the fs, node re-checks it for EVERY FILE IN EVERY MODULE
 var lru = require('lru-cache')({max: 256, maxAge: 250/*ms*/});
-
 var fs = require('fs');
 var origLstat = fs.lstatSync.bind(fs);
-
 // NB: The biggest offender of thrashing lstatSync is the node module system
 // itself, which we can't get into via any sane means.
 require('fs').lstatSync = function(p) {
@@ -16,12 +15,9 @@ require('fs').lstatSync = function(p) {
   return r;
 };
 
-
+//normal electron code starts here
 const electron = require('electron');
-//const app = electron.app
-//destructured into...
 const {app, Menu, dialog} = electron;
-
 
 var log = require('electron-log');
 log.transports.file.level=true;
@@ -98,8 +94,6 @@ function createWindow () {
     mainWindow = null;
   });
 }
-
-
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

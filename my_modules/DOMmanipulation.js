@@ -42,7 +42,7 @@ module.exports.removeBtnClickedUpdateDOM = (() => {
         COPYTOCLIPBOARD();
     });
     setTimeout(function(){
-        $('#queryingSignRemoveTab').removeClass('hidden');
+        $('#queryingSignRemoveTab').slideToggle('swing');
         $('#removeuserinputarea').slideToggle("slow");
         $('#emptyRow').html(`<div class="row center">
                                 <div class="progress">
@@ -56,7 +56,7 @@ module.exports.resetMyRemoveForm = (() => {
         $('#removeuserinputarea').slideToggle("slow");
         $('#emptyRow').empty();
         $('#btnRemove').addClass('ready');
-        $('#queryingSignRemoveTab').addClass('hidden');
+        $('#queryingSignRemoveTab').slideToggle().addClass('hidden');
         $('#removeuserinputarea').removeClass('notReady');
 });
 
@@ -139,7 +139,7 @@ module.exports.remove_parseListOfGroups = ((groupNamesList, user1Name, user1FNam
         </div>
         <div class="col s11 m11 l11 black-text">
         ${val.split(",")[0].slice(3)}
-            <div class="hidden center btn-floating btn-large waves-effect waves-light right green white-text lighten-1 z-depth-2" id="REM-ADGroupBtn${index}">
+            <div class="hidden center btn-floating btn-large waves-effect waves-light right red white-text darken-1 z-depth-2" id="REM-ADGroupBtn${index}">
                 <i class="close material-icons large">remove</i>
             </div>
         </div>
@@ -150,7 +150,7 @@ module.exports.remove_parseListOfGroups = ((groupNamesList, user1Name, user1FNam
     $('#emptyRow').empty();
     $('#user1RemoveList').append(htmlOutput);
     $('#user1RemoveList, #hiddenUndoBtnRow').slideToggle("slow", "swing");
-    setTimeout($('#queryingSignRemoveTab').slideToggle('slow'),200);
+    $('#queryingSignRemoveTab').slideToggle('slow');
     $('#remUserHeading').append(`${user1ShortName}`);
     $('#remUserSubHeading').append(`<div>${user1FName?user1FName:"-"}&nbsp;${user1LName?user1LName:"-"}</div>`);
     $('#removeRestartBtn').click(() => {
